@@ -23,6 +23,19 @@ namespace server.DataAccess
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Configure the relationship between BusLine and City
+            modelBuilder.Entity<BusLine>()
+                .HasOne(bl => bl.StartCity)
+                .WithMany()
+                .HasForeignKey(bl => bl.StartCityId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<BusLine>()
+                .HasOne(bl => bl.DestinationCity)
+                .WithMany()
+                .HasForeignKey(bl => bl.DestinationCityId)
+                .OnDelete(DeleteBehavior.NoAction);
+
             //Contiguring many-to-many relationship between BusSchedule and Stop
             modelBuilder.Entity<BusScheduleStop>()
                 .HasKey(bs => new { bs.BusScheduleId, bs.StopId });
