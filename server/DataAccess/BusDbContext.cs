@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using server.Entities;
 
 namespace server.DataAccess
 {
@@ -11,11 +12,27 @@ namespace server.DataAccess
             _configuration = configuration;
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            var connectionString = _configuration.GetConnectionString("DefaultConnection");
+        public DbSet<BusLine> BusLines { get; set; }
+        public DbSet<City> Cities { get; set; }
 
-            optionsBuilder.UseSqlServer(connectionString);
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<BusLine>()
+                .HasOne(bl => bl.StartCity)
+                .WithMany()
+                .HasForeignKey(bl => bl.StartCityId);
+
+            modelBuilder.Entity<BusLine>()
+                .HasOne(bl => bl.DestinationCity)
+                .WithMany()
+                .HasForeignKey(bl => bl.DestinationCityId);
         }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+            {
+                var connectionString = _configuration.GetConnectionString("DefaultConnection");
+
+                optionsBuilder.UseSqlServer(connectionString);
+            }
     }
 }
