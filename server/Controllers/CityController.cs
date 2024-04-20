@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.DataAccess;
 using server.Entities;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -38,21 +37,34 @@ namespace server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddCity([FromBody] City city)
+        public async Task<IActionResult> AddCity([FromBody] CityDTO cityDTO)
         {
+            var existingCity = await _context.Cities.FirstOrDefaultAsync(c => c.Name == cityDTO.Name);
+            if (existingCity != null)
+            {
+                return Conflict("City already exists.");
+            }
+
+            var city = new City
+            {
+                Name = cityDTO.Name
+            };
+
             _context.Cities.Add(city);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetCity), new { id = city.Id }, city);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCity(int id, [FromBody] City city)
+        public async Task<IActionResult> UpdateCity(int id, [FromBody] CityDTO cityDTO)
         {
-            if (id != city.Id)
+            var city = await _context.Cities.FindAsync(id);
+            if (city == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
+            city.Name = cityDTO.Name;
             _context.Entry(city).State = EntityState.Modified;
 
             try
@@ -93,5 +105,10 @@ namespace server.Controllers
         {
             return _context.Cities.Any(e => e.Id == id);
         }
+    }
+
+    public class CityDTO
+    {
+        public string Name { get; set; }
     }
 }
