@@ -2,7 +2,7 @@
 
 namespace server.Entities
 {
-    public class BusSchedules
+    public class BusSchedule
     {
         public int Id { get; set; }
 
@@ -19,5 +19,7 @@ namespace server.Entities
         public DateTime Arrival { get; set; }
         public double Price { get; set; }
 
+        // Navigation property for many-to-many relationship with Stops
+        public ICollection<BusScheduleStop> Stops { get; set; }
     }
 }
