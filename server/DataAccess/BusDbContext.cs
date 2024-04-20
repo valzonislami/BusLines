@@ -12,21 +12,12 @@ namespace server.DataAccess
             _configuration = configuration;
         }
 
-        public DbSet<BusLine> BusLines { get; set; }
+
         public DbSet<City> Cities { get; set; }
+        public DbSet<Operator> Operators { get; set; }
+        public DbSet<BusLine> BusLines { get; set; }
+        public DbSet<BusSchedules> BusSchedules { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<BusLine>()
-                .HasOne(bl => bl.StartCity)
-                .WithMany()
-                .HasForeignKey(bl => bl.StartCityId);
-
-            modelBuilder.Entity<BusLine>()
-                .HasOne(bl => bl.DestinationCity)
-                .WithMany()
-                .HasForeignKey(bl => bl.DestinationCityId);
-        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             {
