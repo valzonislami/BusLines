@@ -1,66 +1,97 @@
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using server.DataAccess;
 using server.Entities;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace server.Controllers
 {
-    [Route("[controller]")]
     [ApiController]
-    public class CitiesController : ControllerBase
+    [Route("[controller]")]
+    public class CityController : ControllerBase
     {
-        private readonly List<City> _cities = new List<City>();
+        private readonly BusDbContext _context;
 
-        // GET: api/Cities
-        [HttpGet]
-        public IEnumerable<City> GetCities()
+        public CityController(BusDbContext context)
         {
-            return _cities;
+            _context = context;
         }
 
-        // GET: api/Cities/5
-        [HttpGet("{id}")]
-        public ActionResult<City> GetCity(int id)
+        [HttpGet]
+        public async Task<IActionResult> GetCities()
         {
-            var city = _cities.Find(c => c.Id == id);
+            var cities = await _context.Cities.ToListAsync();
+            return Ok(cities);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetCity(int id)
+        {
+            var city = await _context.Cities.FindAsync(id);
             if (city == null)
             {
                 return NotFound();
             }
-            return city;
+            return Ok(city);
         }
 
-        // POST: api/Cities
         [HttpPost]
-        public ActionResult<City> AddCity(City city)
+        public async Task<IActionResult> AddCity([FromBody] City city)
         {
-            _cities.Add(city);
+            _context.Cities.Add(city);
+            await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetCity), new { id = city.Id }, city);
         }
 
-        // PUT: api/Cities/5
         [HttpPut("{id}")]
-        public IActionResult UpdateCity(int id, City city)
+        public async Task<IActionResult> UpdateCity(int id, [FromBody] City city)
         {
-            var existingCity = _cities.Find(c => c.Id == id);
-            if (existingCity == null)
+            if (id != city.Id)
             {
-                return NotFound();
+                return BadRequest();
             }
-            existingCity.Name = city.Name;
+
+            _context.Entry(city).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!CityExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
             return NoContent();
         }
 
-        // DELETE: api/Cities/5
         [HttpDelete("{id}")]
-        public IActionResult DeleteCity(int id)
+        public async Task<IActionResult> DeleteCity(int id)
         {
-            var city = _cities.Find(c => c.Id == id);
+            var city = await _context.Cities.FindAsync(id);
             if (city == null)
             {
                 return NotFound();
             }
-            _cities.Remove(city);
+
+            _context.Cities.Remove(city);
+            await _context.SaveChangesAsync();
+
             return NoContent();
+        }
+
+        private bool CityExists(int id)
+        {
+            return _context.Cities.Any(e => e.Id == id);
         }
     }
 }
