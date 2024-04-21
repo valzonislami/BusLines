@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using server.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace server.Entities
 {
@@ -18,6 +19,8 @@ namespace server.Entities
         public DateTime Departure { get; set; }
         public DateTime Arrival { get; set; }
         public double Price { get; set; }
+
+        public ICollection<BusScheduleStop> BusScheduleStops { get; set; }
 
     }
 }

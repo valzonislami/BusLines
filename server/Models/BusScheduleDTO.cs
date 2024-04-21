@@ -21,5 +21,8 @@ namespace server.Models
 
         public double Price { get; set; }
 
+        public ICollection<int> StopIds { get; set; } // For referencing StopIds associated with this BusSchedule
+
+
     }
 }

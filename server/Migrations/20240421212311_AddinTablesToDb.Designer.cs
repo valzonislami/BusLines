@@ -12,8 +12,8 @@ using server.DataAccess;
 namespace server.Migrations
 {
     [DbContext(typeof(BusDbContext))]
-    [Migration("20240420195919_AddTablesToDatabase")]
-    partial class AddTablesToDatabase
+    [Migration("20240421212311_AddinTablesToDb")]
+    partial class AddinTablesToDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -246,13 +246,13 @@ namespace server.Migrations
             modelBuilder.Entity("server.Entities.BusScheduleStop", b =>
                 {
                     b.HasOne("server.Entities.BusSchedule", "BusSchedule")
-                        .WithMany("Stops")
+                        .WithMany("BusScheduleStops")
                         .HasForeignKey("BusScheduleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("server.Entities.Stop", "Stop")
-                        .WithMany("BusSchedules")
+                        .WithMany("BusScheduleStops")
                         .HasForeignKey("StopId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -294,12 +294,12 @@ namespace server.Migrations
 
             modelBuilder.Entity("server.Entities.BusSchedule", b =>
                 {
-                    b.Navigation("Stops");
+                    b.Navigation("BusScheduleStops");
                 });
 
             modelBuilder.Entity("server.Entities.Stop", b =>
                 {
-                    b.Navigation("BusSchedules");
+                    b.Navigation("BusScheduleStops");
                 });
 #pragma warning restore 612, 618
         }
