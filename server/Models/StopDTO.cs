@@ -2,6 +2,7 @@
 {
     public class StopDTO
     {
+        public int Id { get; set; }
         public int CityId { get; set; }
 
         // Navigation properties
