@@ -68,10 +68,11 @@ namespace server.Controllers
                 return NotFound();
             }
 
-            user.FirstName = userDTO.FirstName;
-            user.LastName = userDTO.LastName;
-            user.Email = userDTO.Email;
-            user.Password = userDTO.Password;
+            // Update only non-null and non-empty values from the DTO
+            user.FirstName = string.IsNullOrWhiteSpace(userDTO.FirstName) ? user.FirstName : userDTO.FirstName;
+            user.LastName = string.IsNullOrWhiteSpace(userDTO.LastName) ? user.LastName : userDTO.LastName;
+            user.Email = string.IsNullOrWhiteSpace(userDTO.Email) ? user.Email : userDTO.Email;
+            user.Password = string.IsNullOrWhiteSpace(userDTO.Password) ? user.Password : userDTO.Password;
 
             _context.Entry(user).State = EntityState.Modified;
 

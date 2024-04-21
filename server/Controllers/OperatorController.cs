@@ -56,7 +56,7 @@ namespace server.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateOperator(int id, [FromBody] OperatorDTO OperatorDTO)
+        public async Task<IActionResult> UpdateOperator(int id, [FromBody] OperatorDTO operatorDTO)
         {
             var oper = await _context.Operators.FindAsync(id);
             if (oper == null)
@@ -64,7 +64,12 @@ namespace server.Controllers
                 return NotFound();
             }
 
-            oper.Name = OperatorDTO.Name;
+            // Update only if the Name property in the DTO is not null or empty
+            if (!string.IsNullOrWhiteSpace(operatorDTO.Name))
+            {
+                oper.Name = operatorDTO.Name;
+            }
+
             _context.Entry(oper).State = EntityState.Modified;
 
             try

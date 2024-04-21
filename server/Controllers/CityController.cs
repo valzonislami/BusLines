@@ -64,7 +64,12 @@ namespace server.Controllers
                 return NotFound();
             }
 
-            city.Name = cityDTO.Name;
+            // Update the city name only if it's not null or empty in the DTO
+            if (!string.IsNullOrWhiteSpace(cityDTO.Name))
+            {
+                city.Name = cityDTO.Name;
+            }
+
             _context.Entry(city).State = EntityState.Modified;
 
             try
@@ -85,6 +90,7 @@ namespace server.Controllers
 
             return NoContent();
         }
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCity(int id)
