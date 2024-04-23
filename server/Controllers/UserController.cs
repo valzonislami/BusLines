@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.DataAccess;
 using server.DTOs;
 using server.Entities;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,17 +15,20 @@ namespace server.Controllers
     public class UserController : ControllerBase
     {
         private readonly BusDbContext _context;
+        private readonly IMapper _mapper;
 
-        public UserController(BusDbContext context)
+        public UserController(BusDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetUsers()
         {
             var users = await _context.Users.ToListAsync();
-            return Ok(users);
+            var usersDto = _mapper.Map<List<UserDTO>>(users);
+            return Ok(usersDto);
         }
 
         [HttpGet("{id}")]
@@ -34,25 +39,20 @@ namespace server.Controllers
             {
                 return NotFound();
             }
-            return Ok(user);
+
+            var userDto = _mapper.Map<UserDTO>(user);
+
+            return Ok(userDto);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddUser([FromBody] UserDTO userDTO)
+        public async Task<IActionResult> AddUser([FromBody] User user)
         {
-            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == userDTO.Email);
+            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == user.Email);
             if (existingUser != null)
             {
                 return Conflict("User already exists.");
             }
-
-            var user = new User
-            {
-                FirstName = userDTO.FirstName,
-                LastName = userDTO.LastName,
-                Email = userDTO.Email,
-                Password = userDTO.Password
-            };
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
@@ -60,21 +60,22 @@ namespace server.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(int id, [FromBody] UserDTO userDTO)
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] User user)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
+            var existingUser = await _context.Users.FindAsync(id);
+            if (existingUser == null)
             {
                 return NotFound();
             }
 
-            // Update only non-null and non-empty values from the DTO
-            user.FirstName = string.IsNullOrWhiteSpace(userDTO.FirstName) ? user.FirstName : userDTO.FirstName;
-            user.LastName = string.IsNullOrWhiteSpace(userDTO.LastName) ? user.LastName : userDTO.LastName;
-            user.Email = string.IsNullOrWhiteSpace(userDTO.Email) ? user.Email : userDTO.Email;
-            user.Password = string.IsNullOrWhiteSpace(userDTO.Password) ? user.Password : userDTO.Password;
+            // Ensure the ID is not updated
+            user.Id = existingUser.Id;
 
-            _context.Entry(user).State = EntityState.Modified;
+            // Update only non-null and non-empty values from the User entity, excluding ID
+            existingUser.FirstName = string.IsNullOrWhiteSpace(user.FirstName) ? existingUser.FirstName : user.FirstName;
+            existingUser.LastName = string.IsNullOrWhiteSpace(user.LastName) ? existingUser.LastName : user.LastName;
+            existingUser.Email = string.IsNullOrWhiteSpace(user.Email) ? existingUser.Email : user.Email;
+            existingUser.Password = string.IsNullOrWhiteSpace(user.Password) ? existingUser.Password : user.Password;
 
             try
             {
@@ -94,6 +95,7 @@ namespace server.Controllers
 
             return NoContent();
         }
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
