@@ -19,11 +19,13 @@ namespace server.Controllers
     {
         private readonly BusDbContext _context;
         private readonly IMapper _mapper;
+        private readonly JwtService _jwtService;
 
-        public UserController(BusDbContext context, IMapper mapper)
+        public UserController(BusDbContext context, IMapper mapper, JwtService jwtService)
         {
             _context = context;
             _mapper = mapper;
+            _jwtService = jwtService;
         }
 
         [HttpGet]
@@ -67,6 +69,20 @@ namespace server.Controllers
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
+        }
+
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == loginDTO.Email);
+            if (user == null || !PasswordHasher.VerifyPassword(loginDTO.Password, user.Password))
+            {
+                return Unauthorized();
+            }
+
+            var token = _jwtService.GenerateToken(user);
+            return Ok(new { Token = token });
         }
 
         [HttpPut("{id}")]
