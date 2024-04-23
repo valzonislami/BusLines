@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using server.DataAccess;
 using server.DTOs;
 using server.Entities;
+using server.Models;
+using server.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -41,7 +44,6 @@ namespace server.Controllers
             }
 
             var userDto = _mapper.Map<UserDTO>(user);
-
             return Ok(userDto);
         }
 
@@ -52,6 +54,14 @@ namespace server.Controllers
             if (existingUser != null)
             {
                 return Conflict("User already exists.");
+            }
+
+            user.Password = PasswordHasher.HashPassword(user.Password);
+
+            // Set default role if not provided or invalid
+            if (!Enum.IsDefined(typeof(UserRole), user.Role))
+            {
+                user.Role = UserRole.User;
             }
 
             _context.Users.Add(user);
@@ -68,14 +78,32 @@ namespace server.Controllers
                 return NotFound();
             }
 
-            // Ensure the ID is not updated
-            user.Id = existingUser.Id;
+            // Check if the email is being changed and if it already exists for another user
+            if (!string.IsNullOrWhiteSpace(user.Email) && user.Email != existingUser.Email)
+            {
+                var emailExists = await _context.Users.AnyAsync(u => u.Email == user.Email);
+                if (emailExists)
+                {
+                    return Conflict("Email already exists for another user.");
+                }
+            }
 
-            // Update only non-null and non-empty values from the User entity, excluding ID
+            // Update only non-null and non-empty values from the User entity, excluding ID and Role
             existingUser.FirstName = string.IsNullOrWhiteSpace(user.FirstName) ? existingUser.FirstName : user.FirstName;
             existingUser.LastName = string.IsNullOrWhiteSpace(user.LastName) ? existingUser.LastName : user.LastName;
             existingUser.Email = string.IsNullOrWhiteSpace(user.Email) ? existingUser.Email : user.Email;
-            existingUser.Password = string.IsNullOrWhiteSpace(user.Password) ? existingUser.Password : user.Password;
+
+            // Hash the password if provided
+            if (!string.IsNullOrWhiteSpace(user.Password))
+            {
+                existingUser.Password = PasswordHasher.HashPassword(user.Password);
+            }
+
+            // Update user role if provided and valid
+            if (Enum.IsDefined(typeof(UserRole), user.Role))
+            {
+                existingUser.Role = user.Role;
+            }
 
             try
             {
@@ -95,7 +123,6 @@ namespace server.Controllers
 
             return NoContent();
         }
-
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
