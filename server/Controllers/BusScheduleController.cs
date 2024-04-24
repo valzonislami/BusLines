@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class BusScheduleController : ControllerBase
     {
@@ -22,14 +22,15 @@ namespace server.Controllers
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BusScheduleDTO>>> GetBusSchedules(
-        [FromQuery] string startCityName,
-        [FromQuery] string destinationCityName)
+        [FromQuery] string startCityName = null,
+        [FromQuery] string destinationCityName = null,
+        [FromQuery] DateTime? departureDate = null)
         {
             IQueryable<BusSchedule> query = _context.BusSchedules
                 .Include(bs => bs.BusLine)
-                    .ThenInclude(bl => bl.StartCity) // Include the start city
+                    .ThenInclude(bl => bl.StartCity)
                 .Include(bs => bs.BusLine)
-                    .ThenInclude(bl => bl.DestinationCity) // Include the destination city
+                    .ThenInclude(bl => bl.DestinationCity)
                 .Include(bs => bs.Operator)
                 .Include(bs => bs.BusScheduleStops);
 
@@ -42,6 +43,14 @@ namespace server.Controllers
             {
                 query = query.Where(bs => bs.BusLine.DestinationCity.Name == destinationCityName);
             }
+
+            if (departureDate.HasValue)
+            {
+                query = query.Where(bs => bs.Departure.Date == departureDate.Value.Date);
+            }
+
+            // Order by departure time
+            query = query.OrderBy(bs => bs.Departure);
 
             var busSchedules = await query.ToListAsync();
 
@@ -58,6 +67,7 @@ namespace server.Controllers
 
             return busScheduleDTOs;
         }
+
 
         [HttpGet("{id}")]
         public async Task<ActionResult<BusScheduleDTO>> GetBusSchedule(int id)
@@ -93,6 +103,11 @@ namespace server.Controllers
         [HttpPost]
         public async Task<ActionResult<BusScheduleDTO>> AddBusSchedule(BusScheduleDTO busScheduleDTO)
         {
+            if (busScheduleDTO.Price <= 0)
+            {
+                return BadRequest("Price must be greater than 0.");
+            }
+
             var busLine = await _context.BusLines.FirstOrDefaultAsync(bl =>
                 bl.StartCity.Name == busScheduleDTO.StartCityName &&
                 bl.DestinationCity.Name == busScheduleDTO.DestinationCityName);
@@ -145,6 +160,7 @@ namespace server.Controllers
         }
 
 
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBusSchedule(int id, BusScheduleDTO busScheduleDTO)
         {
@@ -173,7 +189,7 @@ namespace server.Controllers
                 existingBusSchedule.Arrival = busScheduleDTO.Arrival;
             }
 
-            if (busScheduleDTO.Price != null)
+            if (busScheduleDTO.Price != 0)
             {
                 existingBusSchedule.Price = busScheduleDTO.Price;
             }
@@ -229,6 +245,7 @@ namespace server.Controllers
 
             return NoContent();
         }
+
 
 
         [HttpDelete("{id}")]
