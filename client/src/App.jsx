@@ -1,20 +1,38 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+
+
+import NavBar from './components/NavBar';
+
+
+// Import Style
 import './index.css';
 
-// Components import
+// Pages imports
+import Home from './pages/Home'
+import Lines from './pages/Lines'
+import Profile from './pages/Profile'
+import Register from './pages/Register'
+import Admin from './pages/Admin'
+import Login from './pages/LogIn'
 
-import NavBar from './components/NavBar'
-
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
 
   return (
     <>
-      <NavBar />
+        <Router>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/lines" element={<Lines />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/login" element={<Login />} />
+          </Routes>
+        </Router>
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;
