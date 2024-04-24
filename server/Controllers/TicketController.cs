@@ -21,9 +21,10 @@ namespace server.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllTickets()
+        public async Task<IActionResult> GetAllTickets(
+        [FromQuery] int? userId = null)
         {
-            var ticketData = await _context.Tickets
+            IQueryable<Ticket> query = _context.Tickets
                 .Include(t => t.User)
                 .Include(t => t.BusSchedule)
                     .ThenInclude(bs => bs.BusLine)
@@ -31,31 +32,38 @@ namespace server.Controllers
                 .Include(t => t.BusSchedule)
                     .ThenInclude(bs => bs.BusLine)
                         .ThenInclude(bl => bl.DestinationCity)
-                .Select(t => new
-                {
-                    t.Id,
-                    t.UserId,
-                    t.User.FirstName,
-                    t.User.LastName,
-                    t.User.Email,
-                    t.BusScheduleId,
-                    BusLineId = t.BusSchedule.BusLineId,
-                    StartCityId = t.BusSchedule.BusLine.StartCityId,
-                    StartCityName = t.BusSchedule.BusLine.StartCity.Name,
-                    DestinationCityId = t.BusSchedule.BusLine.DestinationCityId,
-                    DestinationCityName = t.BusSchedule.BusLine.DestinationCity.Name, // Fetch DestinationCityName
-                    OperatorId = t.BusSchedule.OperatorId,
-                    OperatorName = t.BusSchedule.Operator.Name,
-                    Departure = t.BusSchedule.Departure,
-                    Arrival = t.BusSchedule.Arrival,
-                    t.Seat,
-                    t.DateOfBooking,
-                    StopIds = t.BusSchedule.BusScheduleStops.Select(bss => bss.StopId).ToList()
-                })
-                .ToListAsync();
+                .Select(t => t);
+
+            if (userId.HasValue)
+            {
+                query = query.Where(t => t.UserId == userId.Value);
+            }
+
+            var ticketData = await query.Select(t => new
+            {
+                t.Id,
+                t.UserId,
+                t.User.FirstName,
+                t.User.LastName,
+                t.User.Email,
+                t.BusScheduleId,
+                BusLineId = t.BusSchedule.BusLineId,
+                StartCityId = t.BusSchedule.BusLine.StartCityId,
+                StartCityName = t.BusSchedule.BusLine.StartCity.Name,
+                DestinationCityId = t.BusSchedule.BusLine.DestinationCityId,
+                DestinationCityName = t.BusSchedule.BusLine.DestinationCity.Name,
+                OperatorId = t.BusSchedule.OperatorId,
+                OperatorName = t.BusSchedule.Operator.Name,
+                Departure = t.BusSchedule.Departure,
+                Arrival = t.BusSchedule.Arrival,
+                t.Seat,
+                t.DateOfBooking,
+                StopIds = t.BusSchedule.BusScheduleStops.Select(bss => bss.StopId).ToList()
+            }).ToListAsync();
 
             return Ok(ticketData);
         }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTicket(int id)

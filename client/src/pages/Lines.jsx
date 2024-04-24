@@ -6,10 +6,11 @@ import NavBar from "../components/NavBar"
 
 const Lines = () => {
     const location = useLocation();
-    const { startCity: initialStartCity, destinationCity: initialDestinationCity, passengerCount: initialPassengerCount } = location.state;
+    const { startCity: initialStartCity, destinationCity: initialDestinationCity, passengerCount: initialPassengerCount, departureTime: initialDepartureTime } = location.state;
     const [startCity, setStartCity] = useState(initialStartCity);
     const [destinationCity, setDestinationCity] = useState(initialDestinationCity);
     const [passengerCount, setPassengerCount] = useState(initialPassengerCount);
+    const [departureTime, setDepartureTime] = useState(initialDepartureTime);
     const [cities, setCities] = useState([]);
     const [busSchedules, setBusSchedules] = useState([]);
 
@@ -25,7 +26,7 @@ const Lines = () => {
     }, []);
 
     useEffect(() => {
-        axios.get(`https://localhost:7264/api/BusSchedule?startCityName=${startCity}&destinationCityName=${destinationCity}`)
+        axios.get(`https://localhost:7264/BusSchedule?startCityName=${startCity}&destinationCityName=${destinationCity}&&departureDate=${departureTime}`)
             .then((response) => {
                 setBusSchedules(response.data);
             })
@@ -36,18 +37,20 @@ const Lines = () => {
 
     const handleInputChanges = (e) => {
         const { name, value } = e.target;
-        if (name === 'startCity') {
+        if (name === 'StartCityId') {
             setStartCity(value);
-        } else if (name === 'destinationCity') {
+        } else if (name === 'DestinationCityId') {
             setDestinationCity(value);
         } else if (name === 'passengerCount') {
-            setPassengerCount(value);
+            setPassengerCount(Number(value));
+        } else if (name === "departureTime") {
+            setDepartureTime(value);
         }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.get(`https://localhost:7264/api/BusSchedule?startCityName=${startCity}&destinationCityName=${destinationCity}`)
+        axios.get(`https://localhost:7264/BusSchedule?startCityName=${startCity}&destinationCityName=${destinationCity}`)
             .then((response) => {
                 setBusSchedules(response.data);
             })
@@ -59,73 +62,52 @@ const Lines = () => {
     return (
         <div>
             <NavBar />
-            <h1>Search Bus Lines</h1>
-            <form onSubmit={handleSubmit}>
-                <div className='flex'>
-                    <div className="flex">
-                        <input
-                            className="w-10"
-                            type="number"
-                            name="passengerCount"
-                            id="passengerCount"
-                            value={passengerCount}
-                            onChange={handleInputChanges}
-                        />
-                        <p>Pasagjer</p>
-                    </div>
-                    <select
-                        name="StartCityId"
-                        id="StartCityId"
-                        onChange={handleInputChanges}
-                        value={startCity}
-                    >
-                        <option value="" disabled>Select Start City</option>
-                        {cities.map(city => (
-                            <option key={city.id} value={city.name}>{city.name}</option>
-                        ))}
-                    </select>
-                    <select
-                        name="DestinationCityId"
-                        id="DestinationCityId"
-                        onChange={handleInputChanges}
-                        value={destinationCity}
-                    >
-                        <option value="" disabled>Select Destination City</option>
-                        {cities.filter(city => city.name !== startCity).map(city => (
-                            <option key={city.id} value={city.name}>{city.name}</option>
-                        ))}
-                    </select>
-                    <input type="date" />
-                    <button type="submit" className='w-20 h-10 bg-primary'>Search</button>
+            <div className="flex justify-center items-center mt-10">
+                <div>
+                    <h3 className="text-xl font-bold mb-10">Oraret e Autobusit</h3>
+                    <ul>
+                        {busSchedules.filter((schedule) => {
+                            const departureDate = new Date(schedule.departure);
+                            const currentDate = new Date();
+                            return departureDate.getTime() > currentDate.getTime();
+                        }).map((schedule) => {
+                            const dateTimeString = schedule.departure;
+                            const arrivalDateTimeString = schedule.arrival;
+                            const dateTime = new Date(dateTimeString);
+                            const arrivalDateTime = new Date(arrivalDateTimeString);
+                            const departureDate = dateTime.toLocaleDateString();
+                            const departureTime = dateTime.toLocaleTimeString();
+                            const arrivalDate = arrivalDateTime.toLocaleDateString();
+                            const arrivalTime = arrivalDateTime.toLocaleTimeString();
+
+                            const totalPrice = schedule.price * passengerCount;
+
+                            return (
+                                <div className="bg-white rounded-lg shadow-md overflow-hidden w-[750px] mb-10">
+                                    <div className="flex items-center px-4 py-2 border-b border-gray-200">
+                                        <h3 className="text-lg font-medium text-gray-900 mr-2">
+                                            {schedule.startCityName} <span> - {departureDate} {departureTime}</span>
+                                        </h3>
+                                    </div>
+                                    <div className="flex items-center px-4 py-2 border-b border-gray-200">
+                                        <h3 className="text-lg font-medium text-gray-900 mr-2">
+                                            {schedule.destinationCityName} <span> - {arrivalDate} {arrivalTime}</span>
+                                        </h3>
+                                    </div>
+                                    <div className="flex items-center px-4 py-2">
+                                        <div>
+                                            <p className="ml-auto text-sm text-orange-400">{totalPrice}&#8364;</p>
+                                            <p className="text-gray-500 text-sm">{schedule.operatorName}</p>
+                                        </div>
+                                        <button className="text-sm focus:outline-none ml-auto text-orange-400">
+                                            Shiko detajet
+                                        </button>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </ul>
                 </div>
-            </form>
-            <div>
-                <h3>Bus Schedules</h3>
-                <ul>
-                    {busSchedules.map((schedule) => {
-                        const dateTimeString = schedule.departure;
-                        const dateTime = new Date(dateTimeString);
-                        const departureDate = dateTime.toLocaleDateString();
-                        const departureTime = dateTime.toLocaleTimeString();
-
-                        const totalPrice = schedule.price * passengerCount;
-
-                        return (
-                            <div key={schedule.id} className='bg-gray-100 p-4 rounded-lg shadow-md mb-4 flex'>
-                                <div className='flex flex-col'>
-                                    <h1 className='text-lg font-bold'>Departure: {schedule.startCityName}</h1>
-                                    <h1 className='text-lg font-bold'>Destination: {schedule.destinationCityName}</h1>
-                                </div>
-                                <div className='ml-4 flex flex-col'>
-                                    <h1 className='text-lg font-bold'>Operator: {schedule.operatorName}</h1>
-                                    <h2 className='text-sm'>Departure Date: {departureDate}</h2>
-                                    <h2 className='text-sm'>Departure Time: {departureTime}</h2>
-                                    <h2 className='text-lg font-bold'>Total Price: {totalPrice}€</h2>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </ul>
             </div>
         </div>
     );
