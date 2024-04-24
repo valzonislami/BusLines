@@ -29,12 +29,21 @@ namespace server.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetUsers()
+        public async Task<IActionResult> GetUsers(
+            [FromQuery] string? email = null)
         {
-            var users = await _context.Users.ToListAsync();
+            IQueryable<User> query = _context.Users;
+
+            if (!string.IsNullOrEmpty(email))
+            {
+                query = query.Where(e => e.Email == email);
+            }
+
+            var users = await query.ToListAsync();
             var usersDto = _mapper.Map<List<UserDTO>>(users);
             return Ok(usersDto);
         }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(int id)
