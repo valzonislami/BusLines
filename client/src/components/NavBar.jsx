@@ -21,7 +21,7 @@ const NavBar = (props) => {
                 </div>
             </Link>
             {!isLoggedIn ?
-                <Link to="../login"> 
+                <Link to="../authentication"> 
                     <img src={UserOrange} alt="Log In Page" />
                 </Link> :
                 <Link to="../profile">
