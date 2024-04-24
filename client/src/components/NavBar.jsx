@@ -14,15 +14,17 @@ const NavBar = (props) => {
     return (
 
         <nav className="flex flex-row items-center py-5 px-5 justify-between w-full">
-            <div className="flex items-center">
-                <img src={BusLogo} alt="Buslines Logo " />
-                <h1 className="text-3xl ml-1 font-semibold flex text-offBlack">Bus <p className="text-primary">Lines</p></h1>
-            </div>
+            <Link to="../">
+                <div className="flex items-center">
+                    <img src={BusLogo} alt="Buslines Logo " />
+                    <h1 className="text-3xl ml-1 font-semibold flex text-offBlack">Bus <p className="text-primary">Lines</p></h1>
+                </div>
+            </Link>
             {!isLoggedIn ?
-                <Link to="./login">
+                <Link to="../login"> 
                     <img src={UserOrange} alt="Log In Page" />
                 </Link> :
-                <Link to="./profile">
+                <Link to="../profile">
                     <img src={UserOrange} alt="Your Profile" />
                 </Link>
             }
