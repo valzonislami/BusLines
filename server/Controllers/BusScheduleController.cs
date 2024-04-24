@@ -21,26 +21,39 @@ namespace server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BusScheduleDTO>>> GetBusSchedules()
+        public async Task<ActionResult<IEnumerable<BusScheduleDTO>>> GetBusSchedules(
+        [FromQuery] string startCityName,
+        [FromQuery] string destinationCityName)
         {
-            var busSchedules = await _context.BusSchedules
+            IQueryable<BusSchedule> query = _context.BusSchedules
                 .Include(bs => bs.BusLine)
                     .ThenInclude(bl => bl.StartCity) // Include the start city
                 .Include(bs => bs.BusLine)
                     .ThenInclude(bl => bl.DestinationCity) // Include the destination city
                 .Include(bs => bs.Operator)
-                .Include(bs => bs.BusScheduleStops)
-                .ToListAsync();
+                .Include(bs => bs.BusScheduleStops);
+
+            if (!string.IsNullOrEmpty(startCityName))
+            {
+                query = query.Where(bs => bs.BusLine.StartCity.Name == startCityName);
+            }
+
+            if (!string.IsNullOrEmpty(destinationCityName))
+            {
+                query = query.Where(bs => bs.BusLine.DestinationCity.Name == destinationCityName);
+            }
+
+            var busSchedules = await query.ToListAsync();
 
             var busScheduleDTOs = busSchedules.Select(bs => new BusScheduleDTO
             {
-                StartCityName = bs.BusLine?.StartCity?.Name, // Use ?. operator to handle possible null references
-                DestinationCityName = bs.BusLine?.DestinationCity?.Name, // Use ?. operator to handle possible null references
-                OperatorName = bs.Operator?.Name, // Use ?. operator to handle possible null references
+                StartCityName = bs.BusLine?.StartCity?.Name,
+                DestinationCityName = bs.BusLine?.DestinationCity?.Name,
+                OperatorName = bs.Operator?.Name,
                 Departure = bs.Departure,
                 Arrival = bs.Arrival,
                 Price = bs.Price,
-                StopIds = bs.BusScheduleStops?.Select(bss => bss.StopId).ToList() ?? new List<int>() // Use ?. operator to handle possible null references and provide a default empty list if null
+                StopIds = bs.BusScheduleStops?.Select(bss => bss.StopId).ToList() ?? new List<int>()
             }).ToList();
 
             return busScheduleDTOs;

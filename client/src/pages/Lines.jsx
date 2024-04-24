@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
+import NavBar from "../components/NavBar"
 
 const Lines = () => {
     const location = useLocation();
@@ -9,10 +10,22 @@ const Lines = () => {
     const [startCity, setStartCity] = useState(initialStartCity);
     const [destinationCity, setDestinationCity] = useState(initialDestinationCity);
     const [passengerCount, setPassengerCount] = useState(initialPassengerCount);
+    const [cities, setCities] = useState([]);
     const [busSchedules, setBusSchedules] = useState([]);
 
     useEffect(() => {
-        axios.get(`https://localhost:7264/api/BusSchedule?startCity=${startCity}&destinationCity=${destinationCity}`)
+        // Fetch cities API
+        axios.get("https://localhost:7264/City")
+            .then(response => {
+                setCities(response.data);
+            })
+            .catch(error => {
+                console.error("Error fetching cities:", error);
+            });
+    }, []);
+
+    useEffect(() => {
+        axios.get(`https://localhost:7264/api/BusSchedule?startCityName=${startCity}&destinationCityName=${destinationCity}`)
             .then((response) => {
                 setBusSchedules(response.data);
             })
@@ -34,7 +47,7 @@ const Lines = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.get(`https://localhost:7264/api/BusSchedule?startCity=${startCity}&destinationCity=${destinationCity}`)
+        axios.get(`https://localhost:7264/api/BusSchedule?startCityName=${startCity}&destinationCityName=${destinationCity}`)
             .then((response) => {
                 setBusSchedules(response.data);
             })
@@ -45,21 +58,44 @@ const Lines = () => {
 
     return (
         <div>
+            <NavBar />
             <h1>Search Bus Lines</h1>
             <form onSubmit={handleSubmit}>
                 <div className='flex'>
-                    <select name="startCity" value={startCity} onChange={handleInputChanges}>
-                        <option value='' defaultValue='0'>Nisja</option>
-                        <option value='Prishtina'>Prishtina</option>
-                        {/* Add other city options similarly */}
+                    <div className="flex">
+                        <input
+                            className="w-10"
+                            type="number"
+                            name="passengerCount"
+                            id="passengerCount"
+                            value={passengerCount}
+                            onChange={handleInputChanges}
+                        />
+                        <p>Pasagjer</p>
+                    </div>
+                    <select
+                        name="StartCityId"
+                        id="StartCityId"
+                        onChange={handleInputChanges}
+                        value={startCity}
+                    >
+                        <option value="" disabled>Select Start City</option>
+                        {cities.map(city => (
+                            <option key={city.id} value={city.name}>{city.name}</option>
+                        ))}
                     </select>
-                    <select name="destinationCity" value={destinationCity} onChange={handleInputChanges}>
-                        <option value='' defaultValue='0'>Destinacioni</option>
-                        <option value='Shkup'>Shkup</option>
-                        {/* Add other city options similarly */}
+                    <select
+                        name="DestinationCityId"
+                        id="DestinationCityId"
+                        onChange={handleInputChanges}
+                        value={destinationCity}
+                    >
+                        <option value="" disabled>Select Destination City</option>
+                        {cities.filter(city => city.name !== startCity).map(city => (
+                            <option key={city.id} value={city.name}>{city.name}</option>
+                        ))}
                     </select>
-                    <input className='w-10' type="number" name='passengerCount' value={passengerCount} onChange={handleInputChanges} />
-                    <p>Pasagjer</p>
+                    <input type="date" />
                     <button type="submit" className='w-20 h-10 bg-primary'>Search</button>
                 </div>
             </form>
