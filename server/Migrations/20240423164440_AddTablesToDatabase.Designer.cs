@@ -12,8 +12,8 @@ using server.DataAccess;
 namespace server.Migrations
 {
     [DbContext(typeof(BusDbContext))]
-    [Migration("20240421212311_AddinTablesToDb")]
-    partial class AddinTablesToDb
+    [Migration("20240423164440_AddTablesToDatabase")]
+    partial class AddTablesToDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -199,6 +199,9 @@ namespace server.Migrations
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
