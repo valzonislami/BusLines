@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar"
+import TravelTo from "../components/TravelTo";
 
 const Home = () => {
     const navigate = useNavigate();
@@ -70,14 +71,11 @@ const Home = () => {
     return (
         <>
             <NavBar />
-            {error && (
-                <p className="text-red-500">Please select both start and destination cities.</p>
-            )}
-            <div className="flex justify-center items-center mt-10">
+            <div className="flex-col flex justify-center items-center mt-10">
                 <div className="max-w-sm lg:max-w-full lg:flex justify-center items-center space-x-2 overflow-hidden shadow-lg px-6 py-4 flex rounded">
                     <div>
-                        <h2 className="text-xl font-bold">Udheto lehte. Destinacioni i radhes?</h2>
-                        <p className="text-orange-400 font-extralight">Kerko & rezervo bileta te autobusit dhe oferta te udhetimit</p>
+                        <h2 className="text-2xl text-orange-400 font-extralight">Udheto lehte. Destinacioni i radhes?</h2>
+                        <p className="text-gray-400 font-light">Kerko & rezervo bileta te autobusit dhe oferta te udhetimit</p>
                         <form onSubmit={handleSubmit} className="mt-4">
                             <div className="flex items-center">
                                 <input
@@ -131,7 +129,13 @@ const Home = () => {
                         </form>
                     </div>
                 </div>
+                <div className="mt-5">
+                    {error && (
+                        <p className="text-red-500">Ju lutem zgjedhini pikenisjen dhe destinacionin tuaj.</p>
+                    )}
+                </div>
             </div>
+            <TravelTo />
         </>
     );
 };
