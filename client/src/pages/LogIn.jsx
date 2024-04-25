@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import axios from 'axios';
+import BusLogo from "../assets/BusLogo.svg";
+import { Link } from 'react-router-dom';
+
 
 const LogIn = () => {
     const [mode, setMode] = useState('login');
@@ -29,7 +32,6 @@ const LogIn = () => {
             return false; // Assume email doesn't exist on error
         }
     };
-
 
     const handleLoginSuccess = (token) => {
         // Store the token in local storage
@@ -79,10 +81,15 @@ const LogIn = () => {
     };
 
     return (
-        <div className="min-h-screen flex justify-center items-center bg-orange-50">
+        <div className="min-h-screen flex justify-center items-center bg-white">
             <div className="max-w-md w-full">
-                <div className={`bg-white py-8 px-6 rounded-lg shadow-lg ${mode === 'login' ? 'bg-opacity-90' : 'bg-opacity-80'}`}>
-                    <h1 className="text-3xl font-semibold text-center text-orange-400 mb-8">{mode === 'login' ? 'Welcome back!' : 'Sign up'}</h1>
+                <div className={`bg-white py-8 px-6 rounded-lg shadow-2xl ${mode === 'login' ? 'bg-opacity-90' : 'bg-opacity-80'}`}>
+                    <Link to="../">
+                        <div className="flex justify-center mb-8">
+                            <img src={BusLogo} alt="Buslines Logo " />
+                        </div>
+                    </Link>
+                    <h1 className="text-3xl font-normal text-center text-black mb-8">{mode === 'login' ? 'Welcome back!' : 'Sign up'}</h1>
                     {error && <div className="mb-4 text-orange-400">{error}</div>} {/* Apply custom style to error message */}
                     <form onSubmit={handleSubmit}>
                         {mode !== 'signup' && (
@@ -97,20 +104,20 @@ const LogIn = () => {
                         )}
                         {mode === 'signup' && (
                             <>
-                                <div>
-                                    <input type="text" id="firstname" placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
+                                <div className="mb-6">
+                                    <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="text" id="firstname" placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
                                 </div>
-                                <div>
-                                    <input  type="text" id="lastname" placeholder="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
+                                <div className="mb-6">
+                                    <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="text" id="lastname" placeholder="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
                                 </div>
-                                <div>
-                                    <input type="email" id="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                                <div className="mb-6">
+                                    <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="email" id="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                                 </div>
-                                <div>
-                                    <input type="password" id="createpassword" placeholder="Create Password" value={createPassword} onChange={(e) => setCreatePassword(e.target.value)} required />
+                                <div className="mb-6">
+                                    <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="password" id="createpassword" placeholder="Create Password" value={createPassword} onChange={(e) => setCreatePassword(e.target.value)} required />
                                 </div>
-                                <div>
-                                    <input type="password" id="repeatpassword" placeholder="Repeat Password" value={repeatPassword} onChange={(e) => setRepeatPassword(e.target.value)} required />
+                                <div className="mb-6">
+                                    <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="password" id="repeatpassword" placeholder="Repeat Password" value={repeatPassword} onChange={(e) => setRepeatPassword(e.target.value)} required />
                                 </div>
                             </>
                         )}
