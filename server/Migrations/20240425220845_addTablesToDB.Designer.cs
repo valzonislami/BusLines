@@ -12,8 +12,8 @@ using server.DataAccess;
 namespace server.Migrations
 {
     [DbContext(typeof(BusDbContext))]
-    [Migration("20240423164440_AddTablesToDatabase")]
-    partial class AddTablesToDatabase
+    [Migration("20240425220845_addTablesToDB")]
+    partial class addTablesToDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -139,6 +139,10 @@ namespace server.Migrations
 
                     b.Property<int>("CityId")
                         .HasColumnType("int");
+
+                    b.Property<string>("StationName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
