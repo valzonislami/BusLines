@@ -40,13 +40,13 @@ const TravelTo = () => {
     ];
 
     return (
-        <div>
-            <ul>
+        <div className="flex justify-center items-center mt-10">
+            <ul className="flex justify-center items-center mt-10 logo-list">
                 {logos.map((logo) => (
-                    <li key={logo.text}>
-                        <img src={logo.image} alt={logo.text}/>
+                    <li key={logo.text} className="mr-4 flex flex-col items-center">
+                        <img src={logo.image} alt={logo.text} className="w-[200px] h-[200px]  object-contain" />
                         <p value={startCity}>{logo.text}</p>
-                        <button onClick={() => handleSubmit(logo.text)}>
+                        <button onClick={() => handleSubmit(logo.text)} className="text-sm focus:outline-none text-orange-400">
                             Shiko linjen
                         </button>
                     </li>

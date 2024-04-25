@@ -70,7 +70,7 @@ const Lines = () => {
                                 const totalPrice = schedule.price * passengerCount;
 
                                 return (
-                                    <div className="bg-white rounded-lg shadow-md overflow-hidden w-[750px] mb-10">
+                                    <div className="bg-white rounded-lg shadow-xl overflow-hidden w-[750px] mb-10">
                                         <div className="flex items-center px-4 py-2 border-b border-gray-200 justify-between">
                                             <h3 className="text-lg font-normal text-gray-900 mr-2">
                                                 <span className="text-orange-400">&#x21B3;</span>{schedule.startCityName}

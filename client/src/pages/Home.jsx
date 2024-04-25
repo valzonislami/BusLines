@@ -72,7 +72,7 @@ const Home = () => {
         <>
             <NavBar />
             <div className="flex-col flex justify-center items-center mt-10">
-                <div className="max-w-sm lg:max-w-full lg:flex justify-center items-center space-x-2 overflow-hidden shadow-lg px-6 py-4 flex rounded">
+                <div className="max-w-sm lg:max-w-full lg:flex justify-center items-center space-x-2 overflow-hidden shadow-2xl px-6 py-4 flex rounded">
                     <div>
                         <h2 className="text-2xl text-orange-400 font-extralight">Udheto lehte. Destinacioni i radhes?</h2>
                         <p className="text-gray-400 font-light">Kerko & rezervo bileta te autobusit dhe oferta te udhetimit</p>
