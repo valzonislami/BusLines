@@ -1,10 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-
-
-import NavBar from './components/NavBar';
-
 
 // Import Style
 import './index.css';
@@ -13,9 +8,11 @@ import './index.css';
 import Home from './pages/Home'
 import Lines from './pages/Lines'
 import Profile from './pages/Profile'
-import Register from './pages/Register'
 import Admin from './pages/Admin'
 import Login from './pages/LogIn'
+import CityList from './pages/admin/city/CityList'
+import CityCreate from './pages/admin/city/CityCreate'
+import EditCity from './pages/admin/city/EditCity'
 
 const App = () => {
 
@@ -24,11 +21,13 @@ const App = () => {
         <Router>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/register" element={<Register />} />
             <Route path="/lines" element={<Lines />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/authentication" element={<Login />} />
+            <Route path="/admin/cities/" element={<CityList />} />
+            <Route path="/admin/cities/addCity" element={<CityCreate />} />
+            <Route path="/admin/cities/:id/edit" element={<EditCity />} />
           </Routes>
         </Router>
     </>

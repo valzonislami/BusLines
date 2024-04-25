@@ -56,7 +56,7 @@ const EditAccount = ({ setOpenEditProfile }) => {
 
     return (
         <div>
-            <form onSubmit={handleSubmit} className="p-16 pb-6 bg-[#ff6e42d2] border-2 border-gray-300 rounded-lg">
+            <form onSubmit={handleSubmit} className="p-16 pb-6 bg-white border-2 border-gray-300 rounded-lg">
                 <div className="mb-6">
                     <input
                         className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out"
@@ -105,9 +105,9 @@ const EditAccount = ({ setOpenEditProfile }) => {
                     />
                     {passwordMismatch && <p className="text-red-500 text-sm">Passwords do not match.</p>}
                 </div>
-                <div className="mb-6 flex justify-between text-white font-semibold">
-                    <button type="button" onClick={() => setOpenEditProfile(false)}>Cancel</button>
-                    <button type="submit">Save</button>
+                <div className="mb-6 flex justify-between text-black  font-semibold">
+                    <button className="hover:text-orange-400" type="button" onClick={() => setOpenEditProfile(false)}>Cancel</button>
+                    <button className="hover:text-orange-400" type="submit">Save</button>
                 </div>
             </form>
         </div>
