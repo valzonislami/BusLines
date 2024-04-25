@@ -7,6 +7,7 @@ namespace server.Models
 {
     public class BusScheduleDTO
     {
+        public int Id { get; set; }
         // Foreign key for BusLineId
         public string StartCityName { get; set; }
         public string DestinationCityName { get; set; }
@@ -21,7 +22,7 @@ namespace server.Models
 
         public double Price { get; set; }
 
-        public ICollection<int> StopIds { get; set; } // For referencing StopIds associated with this BusSchedule
+        public List<string> StationNames { get; set; } // Property to store station names
 
 
     }

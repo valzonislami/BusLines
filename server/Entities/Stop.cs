@@ -6,7 +6,7 @@ namespace server.Entities
     public class Stop
     {
         public int Id { get; set; }
-
+        public string StationName { get; set; }
         // Foreign key for City
         public int CityId { get; set; }
         [ForeignKey("CityId")]

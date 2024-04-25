@@ -22,9 +22,9 @@ namespace server.Controllers
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BusScheduleDTO>>> GetBusSchedules(
-        [FromQuery] string startCityName = null,
-        [FromQuery] string destinationCityName = null,
-        [FromQuery] DateTime? departureDate = null)
+            [FromQuery] string startCityName = null,
+            [FromQuery] string destinationCityName = null,
+            [FromQuery] DateTime? departureDate = null)
         {
             IQueryable<BusSchedule> query = _context.BusSchedules
                 .Include(bs => bs.BusLine)
@@ -32,7 +32,8 @@ namespace server.Controllers
                 .Include(bs => bs.BusLine)
                     .ThenInclude(bl => bl.DestinationCity)
                 .Include(bs => bs.Operator)
-                .Include(bs => bs.BusScheduleStops);
+                .Include(bs => bs.BusScheduleStops)
+                    .ThenInclude(bss => bss.Stop); // Include stops
 
             if (!string.IsNullOrEmpty(startCityName))
             {
@@ -56,13 +57,15 @@ namespace server.Controllers
 
             var busScheduleDTOs = busSchedules.Select(bs => new BusScheduleDTO
             {
+                Id = bs.Id, // Fetching the ID property
                 StartCityName = bs.BusLine?.StartCity?.Name,
                 DestinationCityName = bs.BusLine?.DestinationCity?.Name,
                 OperatorName = bs.Operator?.Name,
                 Departure = bs.Departure,
                 Arrival = bs.Arrival,
                 Price = bs.Price,
-                StopIds = bs.BusScheduleStops?.Select(bss => bss.StopId).ToList() ?? new List<int>()
+                // Get station names instead of stop IDs
+                StationNames = bs.BusScheduleStops?.Select(bss => bss.Stop.StationName).ToList() ?? new List<string>()
             }).ToList();
 
             return busScheduleDTOs;
@@ -79,6 +82,7 @@ namespace server.Controllers
                     .ThenInclude(bl => bl.DestinationCity) // Include the destination city
                 .Include(bs => bs.Operator)
                 .Include(bs => bs.BusScheduleStops)
+                    .ThenInclude(bss => bss.Stop) // Include stops
                 .FirstOrDefaultAsync(bs => bs.Id == id);
 
             if (busSchedule == null)
@@ -88,17 +92,20 @@ namespace server.Controllers
 
             var busScheduleDTO = new BusScheduleDTO
             {
+                Id = busSchedule.Id,
                 StartCityName = busSchedule.BusLine?.StartCity?.Name, // Use ?. operator to handle possible null references
                 DestinationCityName = busSchedule.BusLine?.DestinationCity?.Name, // Use ?. operator to handle possible null references
                 OperatorName = busSchedule.Operator?.Name, // Use ?. operator to handle possible null references
                 Departure = busSchedule.Departure,
                 Arrival = busSchedule.Arrival,
                 Price = busSchedule.Price,
-                StopIds = busSchedule.BusScheduleStops?.Select(bss => bss.StopId).ToList() ?? new List<int>() // Use ?. operator to handle possible null references and provide a default empty list if null
+                // Get station names instead of stop IDs
+                StationNames = busSchedule.BusScheduleStops?.Select(bss => bss.Stop.StationName).ToList() ?? new List<string>() // Use ?. operator to handle possible null references and provide a default empty list if null
             };
 
             return busScheduleDTO;
         }
+
 
         [HttpPost]
         public async Task<ActionResult<BusScheduleDTO>> AddBusSchedule(BusScheduleDTO busScheduleDTO)
@@ -108,9 +115,12 @@ namespace server.Controllers
                 return BadRequest("Price must be greater than 0.");
             }
 
-            var busLine = await _context.BusLines.FirstOrDefaultAsync(bl =>
-                bl.StartCity.Name == busScheduleDTO.StartCityName &&
-                bl.DestinationCity.Name == busScheduleDTO.DestinationCityName);
+            var busLine = await _context.BusLines
+                .Include(bl => bl.StartCity)
+                .Include(bl => bl.DestinationCity)
+                .FirstOrDefaultAsync(bl =>
+                    bl.StartCity.Name == busScheduleDTO.StartCityName &&
+                    bl.DestinationCity.Name == busScheduleDTO.DestinationCityName);
 
             if (busLine == null)
             {
@@ -134,21 +144,21 @@ namespace server.Controllers
                 BusScheduleStops = new List<BusScheduleStop>()
             };
 
-            if (busScheduleDTO.StopIds != null)
+            if (busScheduleDTO.StationNames != null)
             {
-                foreach (var stopId in busScheduleDTO.StopIds)
+                foreach (var stationName in busScheduleDTO.StationNames)
                 {
-                    var stop = await _context.Stops.FindAsync(stopId);
+                    var stop = await _context.Stops.FirstOrDefaultAsync(s => s.StationName == stationName);
                     if (stop != null)
                     {
                         busSchedule.BusScheduleStops.Add(new BusScheduleStop
                         {
-                            StopId = stopId
+                            StopId = stop.Id
                         });
                     }
                     else
                     {
-                        return BadRequest($"Stop with ID {stopId} not found.");
+                        return BadRequest($"Stop with name {stationName} not found.");
                     }
                 }
             }
@@ -156,8 +166,27 @@ namespace server.Controllers
             _context.BusSchedules.Add(busSchedule);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetBusSchedule), new { id = busSchedule.Id }, busScheduleDTO);
+            // Fetch the start city name and destination city name from the bus line
+            var startCityName = busLine.StartCity?.Name;
+            var destinationCityName = busLine.DestinationCity?.Name;
+
+            // Construct a new BusScheduleDTO based on the added entity and include the ID
+            var addedBusScheduleDTO = new BusScheduleDTO
+            {
+                Id = busSchedule.Id,
+                StartCityName = startCityName,
+                DestinationCityName = destinationCityName,
+                OperatorName = @operator.Name,
+                Departure = busSchedule.Departure,
+                Arrival = busSchedule.Arrival,
+                Price = busSchedule.Price,
+                StationNames = busScheduleDTO.StationNames
+            };
+
+            // Return the newly created bus schedule DTO along with its ID
+            return CreatedAtAction(nameof(GetBusSchedule), new { id = busSchedule.Id }, addedBusScheduleDTO);
         }
+
 
 
 
@@ -179,65 +208,54 @@ namespace server.Controllers
             }
 
             // Update departure, arrival, and price if provided
-            if (busScheduleDTO.Departure != null)
+            if (busScheduleDTO.Departure != default(DateTime))
             {
                 existingBusSchedule.Departure = busScheduleDTO.Departure;
             }
 
-            if (busScheduleDTO.Arrival != null)
+            if (busScheduleDTO.Arrival != default(DateTime))
             {
                 existingBusSchedule.Arrival = busScheduleDTO.Arrival;
             }
 
-            if (busScheduleDTO.Price != 0)
+            if (busScheduleDTO.Price > 0)
             {
                 existingBusSchedule.Price = busScheduleDTO.Price;
             }
 
-            // Update start city if provided
-            if (!string.IsNullOrWhiteSpace(busScheduleDTO.StartCityName))
+            // Update operator name if provided
+            if (!string.IsNullOrEmpty(busScheduleDTO.OperatorName))
             {
-                var startCity = await _context.Cities.FirstOrDefaultAsync(c => c.Name == busScheduleDTO.StartCityName);
-                if (startCity == null)
+                var operatorEntity = await _context.Operators.FirstOrDefaultAsync(op => op.Name == busScheduleDTO.OperatorName);
+                if (operatorEntity != null)
                 {
-                    return BadRequest("Start city not found.");
+                    existingBusSchedule.Operator = operatorEntity;
                 }
-                existingBusSchedule.BusLine.StartCityId = startCity.Id;
-            }
-
-            // Update destination city if provided
-            if (!string.IsNullOrWhiteSpace(busScheduleDTO.DestinationCityName))
-            {
-                var destinationCity = await _context.Cities.FirstOrDefaultAsync(c => c.Name == busScheduleDTO.DestinationCityName);
-                if (destinationCity == null)
+                else
                 {
-                    return BadRequest("Destination city not found.");
+                    return BadRequest($"Operator with name {busScheduleDTO.OperatorName} not found.");
                 }
-                existingBusSchedule.BusLine.DestinationCityId = destinationCity.Id;
-            }
-
-            // Update operator if provided
-            if (!string.IsNullOrWhiteSpace(busScheduleDTO.OperatorName))
-            {
-                var @operator = await _context.Operators.FirstOrDefaultAsync(op => op.Name == busScheduleDTO.OperatorName);
-                if (@operator == null)
-                {
-                    return BadRequest("Operator not found.");
-                }
-                existingBusSchedule.OperatorId = @operator.Id;
             }
 
             // Clear existing stops and associate the bus schedule with new stops if provided
             existingBusSchedule.BusScheduleStops.Clear();
 
-            if (busScheduleDTO.StopIds != null && busScheduleDTO.StopIds.Any())
+            if (busScheduleDTO.StationNames != null && busScheduleDTO.StationNames.Any())
             {
-                foreach (var stopId in busScheduleDTO.StopIds)
+                foreach (var stationName in busScheduleDTO.StationNames)
                 {
-                    existingBusSchedule.BusScheduleStops.Add(new BusScheduleStop
+                    var stop = await _context.Stops.FirstOrDefaultAsync(s => s.StationName == stationName);
+                    if (stop != null)
                     {
-                        StopId = stopId
-                    });
+                        existingBusSchedule.BusScheduleStops.Add(new BusScheduleStop
+                        {
+                            StopId = stop.Id
+                        });
+                    }
+                    else
+                    {
+                        return BadRequest($"Stop with name {stationName} not found.");
+                    }
                 }
             }
 
@@ -245,6 +263,7 @@ namespace server.Controllers
 
             return NoContent();
         }
+
 
 
 
