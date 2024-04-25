@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import NavBar from '../components/NavBar';
+import { useNavigate } from 'react-router-dom';
+import EditAccount from '../components/EditAccount';
 
 const Profile = () => {
     const [user, setUser] = useState(null);
     const [tickets, setTickets] = useState([]);
 
-    localStorage.setItem('userId', '1');
-    console.log(localStorage);
+    const [openEditProfile, setOpenEditProfile] = useState(false);
+
+    const navigate = useNavigate();
 
     const cancelTicket = async (ticketId) => {
         try {
@@ -25,10 +28,10 @@ const Profile = () => {
 
     const fetchUserData = async () => {
       try {
-        const userResponse = await axios.get(`https://localhost:7264/User/${userId}`);
+        const userResponse = await axios.get(`https://localhost:7264/User/${localStorage.getItem('userId')}`);
         setUser(userResponse.data);
 
-        const ticketResponse = await axios.get(`https://localhost:7264/Ticket?userId=${userId}`);
+        const ticketResponse = await axios.get(`https://localhost:7264/Ticket?userId=${localStorage.getItem('userId')}`);
         setTickets(ticketResponse.data);
 
       } catch (error) {
@@ -44,51 +47,54 @@ const Profile = () => {
 
   const clearStorage = () => {
     localStorage.clear();
+    navigate('/');
   }
 
   return (
     <div>
-        <NavBar isLoggedIn={true} />
+        <NavBar/>
         <div>
             
 
             {user ? (
                 <div>
-                    <div>
-                    <h1>Welcome, {user.firstName} {user.lastName}</h1>
-                    <p>{user.email}</p>
-                    <button onClick={()=>clearStorage()}>Logout</button>
+                    <div className="w-1/2 mx-auto">
+                        <h1 className='text-5xl font-semibold text-[#3b3b3b] text-center'>Welcome, {user.firstName} {user.lastName}</h1>
+                        <div className='w-full flex justify-between mt-3 gap-10 px-6'>
+                            <button onClick={()=>clearStorage() } className="text-orange-400 hover:text-white border border-orange-400 hover:bg-orange-400 focus:ring-4 focus:outline-none focus:ring-orange-400 font-medium rounded-lg text-sm text-center flex-grow dark:border-orange-400 dark:text-orange-400 dark:hover:text-white  mt-2 p-1 w-20">Shkyqu</button>
+                            <button onClick={()=>setOpenEditProfile(true)} className="text-orange-400 hover:text-white border border-orange-400 hover:bg-orange-400 focus:ring-4 focus:outline-none focus:ring-orange-400 font-medium rounded-lg text-sm text-center flex-grow dark:border-orange-400 dark:text-orange-400 dark:hover:text-white   mt-2 p-1 w-20">Ndrysho Profilin</button>
+                        </div>
                     </div>
 
                     {tickets ? (
-                        <div>
+                        <div className="flex flex-col gap-4 justify-center">
                             {tickets.map((ticket) => (
 
                                 <div>
-                                    <h1>Your Tickets:</h1>
-                                    <div>
-                                        <div>
-                                            <h3>
-                                                Prishtina 
+                                    <h1 className=' w-[750px] mx-auto mt-[100px] text-3xl text-[#3b3b3b] mb-5'>Biletat tuaja:</h1>
+                                    <div className="bg-white rounded-lg shadow-md overflow-hidden w-[750px] mb-10 border-2 border-gray-300 mx-auto ">
+                                        <div className="flex items-center px-4 py-2 border-b border-gray-200 justify-between">
+                                            <h3 className="text-lg font-medium text-gray-900 mr-2">
+                                                {ticket.startCityName} 
                                             </h3>
-                                            <div>
+                                            <div className='flex'>
                                                 <h3>{ticket.departure.slice(0, 9)} at {ticket.departure.slice(11, 16)}</h3>
                                             </div>
                                         </div>
-                                        <div>
-                                            <h3>
-                                                Shkup 
+                                        <div className="flex items-center px-4 py-2 border-b border-gray-200 justify-between">
+                                            <h3 className="text-lg font-medium text-gray-900 mr-2">
+                                                {ticket.destinationCityName} 
                                             </h3>
-                                            <div>
+                                            <div className='flex'>
                                                 <h3>{ticket.arrival.slice(0, 9)} at {ticket.arrival.slice(11, 16)}</h3>
                                             </div>
                                         </div>
-                                        <div>
+                                        <div className="flex items-center px-4 py-2">
                                             <div>
-                                                <p> Ulesja Numer: {ticket.seat}</p>
-                                                <p>{ticket.operatorName}</p>
+                                                <p className="ml-auto  text-sm text-orange-400"> Ulesja Numer: {ticket.seat}</p>
+                                                <p className="text-gray-500 text-sm">{ticket.operatorName}</p>
                                             </div>
-                                            <button onClick={() => cancelTicket(ticket.id)} >
+                                            <button onClick={() => cancelTicket(ticket.id)} className=" text-sm focus:outline-none ml-auto  text-orange-400">
                                                 Anulo
                                             </button>
                                         </div>
@@ -102,12 +108,19 @@ const Profile = () => {
 
                 </div>
             ) : (
-                <div>
-                    <p>Loading...</p>
+                <div className="flex w-full mt-[15%] align-middle text-center">
+                    <p className='m-auto text-8xl font-bold text-[#3b3b3b] '>Loading...</p>
                 </div>
             )}
         </div>
+
+        <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 shadow-2xl rounded-lg'>
+            {openEditProfile && (
+                <EditAccount setOpenEditProfile={setOpenEditProfile}/>
+            )}
+        </div>
     </div>
+
   );
 };
 

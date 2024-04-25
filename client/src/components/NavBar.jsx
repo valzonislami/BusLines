@@ -1,23 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link } from 'react-router-dom';
 
 // Images Imports
 import BusLogo from "../assets/BusLogo.svg";
 import UserOrange from "../assets/UserSvg-orange.svg";
 
-import { Link } from 'react-router-dom';
-
-
 const NavBar = (props) => {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-    const isLoggedIn = props.isLoggedIn;
+    useEffect(() => {
+        const userId = localStorage.getItem('userId');
+        {userId && setIsLoggedIn(true)};
+        console.log(isLoggedIn)
+    }, []);
 
     return (
-
         <nav className="flex flex-row items-center py-5 px-5 justify-between w-full">
             <Link to="../">
                 <div className="flex items-center">
                     <img src={BusLogo} alt="Buslines Logo " />
-                    <h1 className="text-3xl ml-1 font-semibold flex text-offBlack">Bus <p className="text-primary">Lines</p></h1>
+                    <h1 className="text-3xl ml-1 font-semibold flex text-offBlack">Bus <span className="text-primary">Lines</span></h1>
                 </div>
             </Link>
             {!isLoggedIn ?
@@ -28,8 +30,6 @@ const NavBar = (props) => {
                     <img src={UserOrange} alt="Your Profile" />
                 </Link>
             }
-            
-
         </nav>
     );
 };

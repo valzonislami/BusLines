@@ -83,6 +83,8 @@ const Home = () => {
                                     type="number"
                                     name="passengerCount"
                                     id="passengerCount"
+                                    min='0'
+                                    max='10'
                                     value={passengerCount}
                                     onChange={handleInputChanges}
                                 />
@@ -122,7 +124,7 @@ const Home = () => {
                                     min={new Date().toISOString().slice(0, 10)} // Set the minimum date to the current date
                                     className="flex-grow p-1 rounded-md border border-gray-100"
                                 />
-                                <button type="submit" className="text-orange-400 hover:text-white border border-orange-400 hover:bg-orange-400 focus:ring-4 focus:outline-none focus:ring-orange-400 font-medium rounded-lg text-sm text-center flex-grow dark:border-orange-400 dark:text-orange-400 dark:hover:text-white dark:hover:bg-orange-400 dark:focus:ring-orange-900 mt-2 p-1 rounded-md w-20">
+                                <button type="submit" className="text-orange-400 hover:text-white border border-orange-400 hover:bg-orange-400 focus:ring-4 focus:outline-none focus:ring-orange-400 font-medium rounded-lg text-sm text-center flex-grow dark:border-orange-400 dark:text-orange-400 dark:hover:text-white dark:hover:bg-orange-400 dark:focus:ring-orange-900 mt-2 p-1 w-20">
                                     Kerko
                                 </button>
                             </div>
