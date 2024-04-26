@@ -28,6 +28,7 @@ import UserCreate from './pages/admin/user/UserCreate'
 import OperatorList from './pages/admin/operator/OperatorList'
 import EditOperator from './pages/admin/operator/EditOperator'   
 import OperatorCreate from './pages/admin/operator/OperatorCreate'
+import TicketList from './pages/admin/ticket/TicketList'
 
 
 
@@ -61,6 +62,7 @@ const App = () => {
             <Route path="/admin/operators/" element={<OperatorList />} />
             <Route path="/admin/operators/:id/edit" element={<EditOperator />} />
             <Route path="/admin/operators/addOperator" element={<OperatorCreate />} />
+            <Route path="/admin/tickets/" element={<TicketList />} />
           </Routes>
         </Router>
     </>
