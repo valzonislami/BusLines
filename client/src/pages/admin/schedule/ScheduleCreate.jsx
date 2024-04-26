@@ -1,75 +1,97 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import NavBar from "../../../components/NavBar"
+import { Link } from 'react-router-dom';
+import NavBar from "../../../components/NavBar";
 
-const BusScheduleCreate = () => {
-    const [startCityName, setStartCityName] = useState('');
-    const [destinationCityName, setDestinationCityName] = useState('');
-    const [operatorName, setOperatorName] = useState('');
-    const [departure, setDeparture] = useState('');
-    const [arrival, setArrival] = useState('');
-    const [price, setPrice] = useState('');
-    const [stationNames, setStationNames] = useState(['']);
+const ScheduleCreate = () => {
+    const [formData, setFormData] = useState({
+        startCityName: '',
+        destinationCityName: '',
+        operatorName: '',
+        departure: '',
+        arrival: '',
+        price: '',
+        stationNames: [],
+    });
+
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [cities, setCities] = useState([]);
+    const [operators, setOperators] = useState([]);
+    const [stops, setStops] = useState([]);
+    const [selectedStop, setSelectedStop] = useState('');
 
-    const handleStartCityChange = (event) => {
-        setStartCityName(event.target.value);
+    useEffect(() => {
+        fetchCities();
+        fetchOperators();
+        fetchStops();
+    }, []);
+
+    const fetchCities = async () => {
+        try {
+            const response = await axios.get('https://localhost:7264/city');
+            const sortedCities = response.data.sort((a, b) => a.name.localeCompare(b.name));
+            setCities(sortedCities);
+        } catch (error) {
+            console.error('Error fetching cities:', error);
+        }
+    };
+
+    const fetchOperators = async () => {
+        try {
+            const response = await axios.get('https://localhost:7264/Operator');
+            const sortedOperators = response.data.sort((a, b) => a.name.localeCompare(b.name));
+            setOperators(sortedOperators);
+        } catch (error) {
+            console.error('Error fetching operators:', error);
+        }
+    };
+
+    const fetchStops = async () => {
+        try {
+            const response = await axios.get('https://localhost:7264/Stop');
+            const sortedStops = response.data.sort((a, b) => a.stationName.localeCompare(b.stationName));
+            setStops(sortedStops);
+        } catch (error) {
+            console.error('Error fetching stops:', error);
+        }
+    };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value,
+        });
         setError('');
         setSuccess('');
     };
 
-    const handleDestinationCityChange = (event) => {
-        setDestinationCityName(event.target.value);
-        setError('');
-        setSuccess('');
+    const handleSelectStopChange = (event) => {
+        setSelectedStop(event.target.value);
     };
 
-    const handleOperatorChange = (event) => {
-        setOperatorName(event.target.value);
-        setError('');
-        setSuccess('');
+    const handleAddStop = () => {
+        if (selectedStop.trim() !== '' && !formData.stationNames.includes(selectedStop)) {
+            setFormData({
+                ...formData,
+                stationNames: [...formData.stationNames, selectedStop.trim()],
+            });
+            setSelectedStop('');
+        }
     };
 
-    const handleDepartureChange = (event) => {
-        setDeparture(event.target.value);
-        setError('');
-        setSuccess('');
-    };
-
-    const handleArrivalChange = (event) => {
-        setArrival(event.target.value);
-        setError('');
-        setSuccess('');
-    };
-
-    const handlePriceChange = (event) => {
-        setPrice(event.target.value);
-        setError('');
-        setSuccess('');
-    };
-
-    const handleStationNameChange = (index, event) => {
-        const updatedStations = [...stationNames];
-        updatedStations[index] = event.target.value;
-        setStationNames(updatedStations);
-        setError('');
-        setSuccess('');
-    };
-
-    const addStation = () => {
-        setStationNames([...stationNames, '']);
-    };
-
-    const removeStation = (index) => {
-        const updatedStations = [...stationNames];
-        updatedStations.splice(index, 1);
-        setStationNames(updatedStations);
+    const handleRemoveStop = (index) => {
+        setFormData({
+            ...formData,
+            stationNames: formData.stationNames.filter((_, i) => i !== index),
+        });
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        if (!startCityName.trim() || !destinationCityName.trim() || !operatorName.trim() || !departure.trim() || !arrival.trim() || !price.trim() || stationNames.some(station => !station.trim())) {
+        const { startCityName, destinationCityName, operatorName, departure, arrival, price, stationNames } = formData;
+        if (!startCityName || !destinationCityName || !operatorName || !departure || !arrival || !price || stationNames.some(station => !station.trim())) {
             setError('Please fill in all fields.');
             return;
         }
@@ -84,20 +106,21 @@ const BusScheduleCreate = () => {
                 stationNames
             });
             setSuccess(`Bus schedule added successfully.`);
-            setStartCityName('');
-            setDestinationCityName('');
-            setOperatorName('');
-            setDeparture('');
-            setArrival('');
-            setPrice('');
-            setStationNames(['']);
+            setFormData({
+                startCityName: '',
+                destinationCityName: '',
+                operatorName: '',
+                departure: '',
+                arrival: '',
+                price: '',
+                stationNames: [],
+            });
             setError('');
         } catch (error) {
             setError('Error adding bus schedule. Please try again.');
             console.error('Error adding bus schedule:', error);
         }
     };
-
     return (
         <>
             <NavBar />
@@ -109,44 +132,57 @@ const BusScheduleCreate = () => {
                         {success && <p className="text-green-500 text-sm mb-4">{success}</p>}
                         <div className="mb-4">
                             <label htmlFor="startCityName" className="block text-gray-700 text-sm font-bold mb-2">Start City:</label>
-                            <input
-                                type="text"
+                            <select
                                 id="startCityName"
-                                value={startCityName}
-                                onChange={handleStartCityChange}
+                                name="startCityName"
+                                value={formData.startCityName}
+                                onChange={handleChange}
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                placeholder="Enter start city"
-                            />
+                            >
+                                <option value="">Select start city</option>
+                                {cities.map(city => (
+                                    <option key={city.id} value={city.name}>{city.name}</option>
+                                ))}
+                            </select>
                         </div>
                         <div className="mb-4">
                             <label htmlFor="destinationCityName" className="block text-gray-700 text-sm font-bold mb-2">Destination City:</label>
-                            <input
-                                type="text"
+                            <select
                                 id="destinationCityName"
-                                value={destinationCityName}
-                                onChange={handleDestinationCityChange}
+                                name="destinationCityName"
+                                value={formData.destinationCityName}
+                                onChange={handleChange}
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                placeholder="Enter destination city"
-                            />
+                            >
+                                <option value="">Select destination city</option>
+                                {cities.map(city => (
+                                    <option key={city.id} value={city.name}>{city.name}</option>
+                                ))}
+                            </select>
                         </div>
                         <div className="mb-4">
                             <label htmlFor="operatorName" className="block text-gray-700 text-sm font-bold mb-2">Operator Name:</label>
-                            <input
-                                type="text"
+                            <select
                                 id="operatorName"
-                                value={operatorName}
-                                onChange={handleOperatorChange}
+                                name="operatorName"
+                                value={formData.operatorName}
+                                onChange={handleChange}
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                placeholder="Enter operator name"
-                            />
+                            >
+                                <option value="">Select operator</option>
+                                {operators.map(operator => (
+                                    <option key={operator.id} value={operator.name}>{operator.name}</option>
+                                ))}
+                            </select>
                         </div>
                         <div className="mb-4">
                             <label htmlFor="departure" className="block text-gray-700 text-sm font-bold mb-2">Departure:</label>
                             <input
                                 type="datetime-local"
                                 id="departure"
-                                value={departure}
-                                onChange={handleDepartureChange}
+                                name="departure"
+                                value={formData.departure}
+                                onChange={handleChange}
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                             />
                         </div>
@@ -155,8 +191,9 @@ const BusScheduleCreate = () => {
                             <input
                                 type="datetime-local"
                                 id="arrival"
-                                value={arrival}
-                                onChange={handleArrivalChange}
+                                name="arrival"
+                                value={formData.arrival}
+                                onChange={handleChange}
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                             />
                         </div>
@@ -165,39 +202,52 @@ const BusScheduleCreate = () => {
                             <input
                                 type="number"
                                 id="price"
-                                value={price}
-                                onChange={handlePriceChange}
+                                name="price"
+                                value={formData.price}
+                                onChange={handleChange}
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                 placeholder="Enter price"
                             />
                         </div>
                         <div className="mb-4">
-                            <label className="block text-gray-700 text-sm font-bold mb-2">Stations:</label>
-                            {stationNames.map((station, index) => (
-                                <div key={index} className="flex items-center mb-2">
-                                    <input
-                                        type="text"
-                                        value={station}
-                                        onChange={(event) => handleStationNameChange(index, event)}
-                                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                        placeholder={`Enter station ${index + 1}`}
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => removeStation(index)}
-                                        className="ml-2 bg-red-500 text-white font-medium py-2 px-4 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-red-500 hover:bg-red-600"
-                                    >
-                                        Remove
-                                    </button>
-                                </div>
-                            ))}
+                            <label htmlFor="selectStop" className="block text-gray-700 text-sm font-bold mb-2">Select Stop:</label>
+                            <select
+                                id="selectStop"
+                                value={selectedStop}
+                                onChange={handleSelectStopChange}
+                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            >
+                                <option value="">Select a stop</option>
+                                {stops.map(stop => (
+                                    <option key={stop.id} value={stop.stationName}>{stop.stationName}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="mb-4">
                             <button
                                 type="button"
-                                onClick={addStation}
-                                className="bg-blue-400 text-white font-medium py-2 px-4 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-blue-400 hover:bg-blue-500"
+                                onClick={handleAddStop}
+                                className="bg-blue-500 text-white font-medium py-2 px-4 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-blue-500 hover:bg-blue-600"
                             >
-                                Add Station
+                                Add Stop
                             </button>
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">Stops:</label>
+                            <ul>
+                                {formData.stationNames.map((stop, index) => (
+                                    <li key={index} className="flex justify-between items-center">
+                                        <span>{stop}</span>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleRemoveStop(index)}
+                                            className="bg-red-500 text-white font-medium py-1 px-2 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-red-500 hover:bg-red-600"
+                                        >
+                                            Remove
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
                         <button
                             type="submit"
@@ -205,6 +255,12 @@ const BusScheduleCreate = () => {
                         >
                             Add Bus Schedule
                         </button>
+                        <Link
+                            to="/admin/schedules" // Replace this with your desired route
+                            className="bg-gray-400 text-white font-medium py-2 px-4 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-gray-400 hover:bg-gray-500 ml-2"
+                        >
+                            Back
+                        </Link>
                     </form>
                 </div>
             </div>
@@ -212,4 +268,4 @@ const BusScheduleCreate = () => {
     );
 };
 
-export default BusScheduleCreate;
+export default ScheduleCreate;

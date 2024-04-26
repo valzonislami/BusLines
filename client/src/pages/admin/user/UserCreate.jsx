@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import NavBar from "../../../components/NavBar";
 
 const UserCreate = () => {
@@ -29,6 +30,13 @@ const UserCreate = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Check for blank fields
+        if (!firstName.trim() || !lastName.trim() || !email.trim() || !createPassword.trim() || !repeatPassword.trim()) {
+            setError("Please fill in all fields.");
+            return;
+        }
+
         if (createPassword !== repeatPassword) {
             setError("Passwords do not match");
             return; // Prevent further execution if passwords don't match
@@ -143,6 +151,12 @@ const UserCreate = () => {
                         >
                             Add User
                         </button>
+                        <Link
+                            to="/admin/users"
+                            className="bg-gray-400 text-white font-medium py-2 px-4 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-gray-400 hover:bg-gray-500 ml-2"
+                        >
+                            Back
+                        </Link>
                     </form>
                 </div>
             </div>

@@ -1,12 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import NavBar from "../../../components/NavBar";
 
 const LineCreate = () => {
     const [startCityName, setStartCityName] = useState('');
     const [destinationCityName, setDestinationCityName] = useState('');
+    const [cities, setCities] = useState([]);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+
+    useEffect(() => {
+        fetchCities();
+    }, []);
+
+    const fetchCities = async () => {
+        try {
+            const response = await axios.get('https://localhost:7264/city');
+            const sortedCities = response.data.sort((a, b) => a.name.localeCompare(b.name));
+            setCities(sortedCities);
+        } catch (error) {
+            console.error('Error fetching cities:', error);
+        }
+    };
 
     const handleStartCityNameChange = (event) => {
         setStartCityName(event.target.value);
@@ -52,25 +68,31 @@ const LineCreate = () => {
                         {success && <p className="text-green-500 text-sm mb-4">{success}</p>}
                         <div className="mb-4">
                             <label htmlFor="startCityName" className="block text-gray-700 text-sm font-bold mb-2">Start City Name:</label>
-                            <input
-                                type="text"
+                            <select
                                 id="startCityName"
                                 value={startCityName}
                                 onChange={handleStartCityNameChange}
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                placeholder="Enter start city name"
-                            />
+                            >
+                                <option value="">Select start city</option>
+                                {cities.map(city => (
+                                    <option key={city.id} value={city.name}>{city.name}</option>
+                                ))}
+                            </select>
                         </div>
                         <div className="mb-4">
                             <label htmlFor="destinationCityName" className="block text-gray-700 text-sm font-bold mb-2">Destination City Name:</label>
-                            <input
-                                type="text"
+                            <select
                                 id="destinationCityName"
                                 value={destinationCityName}
                                 onChange={handleDestinationCityNameChange}
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                placeholder="Enter destination city name"
-                            />
+                            >
+                                <option value="">Select destination city</option>
+                                {cities.map(city => (
+                                    <option key={city.id} value={city.name}>{city.name}</option>
+                                ))}
+                            </select>
                         </div>
                         <button
                             type="submit"
@@ -78,6 +100,12 @@ const LineCreate = () => {
                         >
                             Add Bus Line
                         </button>
+                        <Link
+                            to="/admin/lines"
+                            className="bg-gray-400 text-white font-medium py-2 px-4 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-gray-400 hover:bg-gray-500 ml-2"
+                        >
+                            Back
+                        </Link>
                     </form>
                 </div>
             </div>

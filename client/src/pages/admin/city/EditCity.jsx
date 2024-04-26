@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import axios from 'axios'; // Import Axios
 import NavBar from "../../../components/NavBar"
@@ -61,6 +62,12 @@ const EditCity = () => {
                         >
                             Update
                         </button>
+                        <Link
+                            to="/admin/cities"
+                            className="bg-gray-400 text-white font-medium py-2 px-4 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-gray-400 hover:bg-gray-500 ml-2"
+                        >
+                            Back
+                        </Link>
                     </form>
                 </div>
             </div>

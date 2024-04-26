@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import NavBar from "../../../components/NavBar"
+import NavBar from "../../../components/NavBar";
 
 const BusScheduleList = () => {
     const [busSchedules, setBusSchedules] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
     useEffect(() => {
         fetchBusSchedules();
-    }, []);
+    }, [currentPage]);
 
     const fetchBusSchedules = async () => {
         try {
@@ -34,6 +36,12 @@ const BusScheduleList = () => {
         }
     };
 
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = busSchedules.slice(indexOfFirstItem, indexOfLastItem);
+
+    const pageCount = Math.ceil(busSchedules.length / itemsPerPage);
+
     return (
         <>
             <NavBar />
@@ -41,11 +49,19 @@ const BusScheduleList = () => {
                 <div className="bg-white shadow-md rounded-xl my-6">
                     <div className="flex justify-between items-center border-b border-gray-200 p-6">
                         <h2 className="text-xl font-bold text-gray-700">Bus Schedule List</h2>
+                        <div>
                         <Link to="/admin/schedules/addSchedule">
                             <button className="bg-orange-400 text-white font-medium py-2 px-4 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-orange-400 hover:bg-orange-500">
                                 Add new
                             </button>
                         </Link>
+                        <Link
+                            to="/admin" 
+                            className="bg-gray-400 text-white font-medium py-2 px-4 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-gray-400 hover:bg-gray-500 ml-2"
+                        >
+                            Back
+                            </Link>
+                        </div>
                     </div>
                     <div className="w-full overflow-x-auto">
                         <table className="w-full whitespace-no-wrap">
@@ -61,7 +77,7 @@ const BusScheduleList = () => {
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
-                                {busSchedules.map((schedule, index) => (
+                                {currentItems.map((schedule, index) => (
                                     <tr key={schedule.id}>
                                         <td className="px-6 py-4">{schedule.id}</td>
                                         <td className="px-6 py-4">{schedule.startCityName}</td>
@@ -81,6 +97,18 @@ const BusScheduleList = () => {
                                 ))}
                             </tbody>
                         </table>
+                    </div>
+                    <div className="flex justify-center items-center mt-6 pb-8">
+                        {Array.from({ length: pageCount }, (_, i) => (
+                            <button
+                                key={i}
+                                onClick={() => setCurrentPage(i + 1)}
+                                className={`mx-1 px-3 py-1 rounded-lg focus:outline-none ${currentPage === i + 1 ? 'bg-gray-300' : 'bg-gray-200'
+                                    }`}
+                            >
+                                {i + 1}
+                            </button>
+                        ))}
                     </div>
                 </div>
             </div>

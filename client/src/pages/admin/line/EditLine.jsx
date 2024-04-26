@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import NavBar from "../../../components/NavBar";
 
 const EditLine = () => {
     const { id } = useParams();
     const [busLine, setBusLine] = useState(null);
+    const [cities, setCities] = useState([]);
 
     useEffect(() => {
         fetchBusLine();
+        fetchCities();
     }, []);
 
     const fetchBusLine = async () => {
@@ -21,6 +24,16 @@ const EditLine = () => {
             });
         } catch (error) {
             console.error('Error fetching bus line:', error);
+        }
+    };
+
+    const fetchCities = async () => {
+        try {
+            const response = await axios.get('https://localhost:7264/city');
+            const sortedCities = response.data.sort((a, b) => a.name.localeCompare(b.name));
+            setCities(sortedCities);
+        } catch (error) {
+            console.error('Error fetching cities:', error);
         }
     };
 
@@ -53,27 +66,31 @@ const EditLine = () => {
                         <p className="block text-gray-700 text-xl font-medium mb-2">Edit Bus Line</p>
                         <div className="mb-4">
                             <label htmlFor="startCityName" className="block text-gray-700 text-sm font-bold mb-2">Start City Name:</label>
-                            <input
-                                type="text"
+                            <select
                                 id="startCityName"
                                 name="startCityName"
                                 value={busLine.startCityName}
                                 onChange={handleChange}
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                placeholder="Enter start city name"
-                            />
+                            >
+                                {cities.map(city => (
+                                    <option key={city.id} value={city.name}>{city.name}</option>
+                                ))}
+                            </select>
                         </div>
                         <div className="mb-4">
                             <label htmlFor="destinationCityName" className="block text-gray-700 text-sm font-bold mb-2">Destination City Name:</label>
-                            <input
-                                type="text"
+                            <select
                                 id="destinationCityName"
                                 name="destinationCityName"
                                 value={busLine.destinationCityName}
                                 onChange={handleChange}
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                placeholder="Enter destination city name"
-                            />
+                            >
+                                {cities.map(city => (
+                                    <option key={city.id} value={city.name}>{city.name}</option>
+                                ))}
+                            </select>
                         </div>
                         <button
                             type="submit"
@@ -81,6 +98,12 @@ const EditLine = () => {
                         >
                             Update
                         </button>
+                        <Link
+                            to="/admin/lines"
+                            className="bg-gray-400 text-white font-medium py-2 px-4 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-gray-400 hover:bg-gray-500 ml-2"
+                        >
+                            Back
+                        </Link>
                     </form>
                 </div>
             </div>
