@@ -29,6 +29,7 @@ import OperatorList from './pages/admin/operator/OperatorList'
 import EditOperator from './pages/admin/operator/EditOperator'   
 import OperatorCreate from './pages/admin/operator/OperatorCreate'
 import TicketList from './pages/admin/ticket/TicketList'
+import TicketEdit from './pages/admin/ticket/TicketEdit'
 
 
 
@@ -63,6 +64,7 @@ const App = () => {
             <Route path="/admin/operators/:id/edit" element={<EditOperator />} />
             <Route path="/admin/operators/addOperator" element={<OperatorCreate />} />
             <Route path="/admin/tickets/" element={<TicketList />} />
+            <Route path="/admin/tickets/:id/edit" element={<TicketEdit />} />
           </Routes>
         </Router>
     </>
