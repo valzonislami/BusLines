@@ -102,7 +102,7 @@ const LogIn = () => {
                             <img src={BusLogo} alt="Buslines Logo " />
                         </div>
                     </Link>
-                    <h1 className="text-3xl font-normal text-center text-black mb-8">{mode === 'login' ? 'Welcome back!' : 'Sign up'}</h1>
+                    <h1 className="text-3xl font-normal text-center text-black mb-8">{mode === 'login' ? 'Miresevini!' : 'Regjistrohu'}</h1>
                     {error && <div className="mb-4 text-orange-400">{error}</div>} {/* Apply custom style to error message */}
                     <form onSubmit={handleSubmit}>
                         {mode !== 'signup' && (
@@ -118,27 +118,27 @@ const LogIn = () => {
                         {mode === 'signup' && (
                             <>
                                 <div className="mb-6">
-                                    <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="text" id="firstname" placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
+                                    <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="text" id="firstname" placeholder="Emri" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
                                 </div>
                                 <div className="mb-6">
-                                    <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="text" id="lastname" placeholder="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
+                                    <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="text" id="lastname" placeholder="Mbiemri" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
                                 </div>
                                 <div className="mb-6">
                                     <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="email" id="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                                 </div>
                                 <div className="mb-6">
-                                    <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="password" id="createpassword" placeholder="Create Password" value={createPassword} onChange={(e) => setCreatePassword(e.target.value)} required />
+                                    <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="password" id="createpassword" placeholder="Shkruaj passwordin" value={createPassword} onChange={(e) => setCreatePassword(e.target.value)} required />
                                 </div>
                                 <div className="mb-6">
-                                    <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="password" id="repeatpassword" placeholder="Repeat Password" value={repeatPassword} onChange={(e) => setRepeatPassword(e.target.value)} required />
+                                    <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="password" id="repeatpassword" placeholder="Perserit passwordin" value={repeatPassword} onChange={(e) => setRepeatPassword(e.target.value)} required />
                                 </div>
                             </>
                         )}
-                        <button className="w-full bg-orange-400 hover:bg-orange-500 py-3 rounded-md text-white font-semibold transition duration-300 ease-in-out" type="submit">{mode === 'login' ? 'Log In' : 'Sign Up'}</button>
+                        <button className="w-full bg-orange-400 hover:bg-orange-500 py-3 rounded-md text-white font-semibold transition duration-300 ease-in-out" type="submit">{mode === 'login' ? 'Kyqu' : 'Regjistrohu'}</button>
                     </form>
                     <div className="mt-6 text-center text-gray-800">
-                        <span>{mode === 'login' ? "Don't" : 'Already'} have an account?</span>
-                        <button className="ml-2 text-orange-400 hover:underline focus:outline-none" onClick={toggleMode}>{mode === 'login' ? 'Sign up' : 'Log in'}</button>
+                        <span>{mode === 'login' ? "Nuk keni" : 'Keni'} llogari?</span>
+                        <button className="ml-2 text-orange-400 hover:underline focus:outline-none" onClick={toggleMode}>{mode === 'login' ? 'Regjistrohu' : 'Kyqu'}</button>
                     </div>
                 </div>
             </div>

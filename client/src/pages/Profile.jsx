@@ -59,7 +59,7 @@ const Profile = () => {
                 {user ? (
                     <div>
                         <div className="w-1/2 mx-auto">
-                            <h1 className='text-5xl font-semibold text-[#3b3b3b] text-center'>Welcome, {user.firstName} {user.lastName}</h1>
+                            <h1 className='text-5xl font-semibold text-[#3b3b3b] text-center'>Miresevini, {user.firstName} {user.lastName}</h1>
                             <div className='w-full flex justify-between mt-3 gap-10 px-6'>
                                 <button onClick={() => clearStorage()} className="text-orange-400 hover:text-white border border-orange-400 hover:bg-orange-400 focus:ring-4 focus:outline-none focus:ring-orange-400 font-medium rounded-lg text-sm text-center flex-grow dark:border-orange-400 dark:text-orange-400 dark:hover:text-white  mt-2 p-1 w-20">Shkyqu</button>
                                 <button onClick={() => setOpenEditProfile(true)} className="text-orange-400 hover:text-white border border-orange-400 hover:bg-orange-400 focus:ring-4 focus:outline-none focus:ring-orange-400 font-medium rounded-lg text-sm text-center flex-grow dark:border-orange-400 dark:text-orange-400 dark:hover:text-white   mt-2 p-1 w-20">Ndrysho Profilin</button>

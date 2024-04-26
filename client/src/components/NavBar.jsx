@@ -11,7 +11,6 @@ const NavBar = (props) => {
     useEffect(() => {
         const userId = localStorage.getItem('userId');
         {userId && setIsLoggedIn(true)};
-        console.log(isLoggedIn)
     }, []);
 
     return (
