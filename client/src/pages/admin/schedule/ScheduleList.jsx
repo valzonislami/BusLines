@@ -68,6 +68,9 @@ const BusScheduleList = () => {
                                             <button onClick={() => deleteBusSchedule(schedule.id)} className="text-red-600 hover:text-red-900">
                                                 Delete
                                             </button>
+                                            <Link to={`/admin/schedules/${schedule.id}/edit`} className="text-blue-600 hover:text-blue-900 ml-10">
+                                                Edit
+                                            </Link>
                                         </td>
                                     </tr>
                                 ))}
