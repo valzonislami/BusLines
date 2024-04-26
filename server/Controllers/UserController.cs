@@ -91,7 +91,7 @@ namespace server.Controllers
             }
 
             var token = _jwtService.GenerateToken(user);
-            return Ok(new { Token = token });
+            return Ok(new { token = token, userId = user.Id, userRole = user.Role });
         }
 
         [HttpPut("{id}")]

@@ -13,6 +13,7 @@ import Login from './pages/LogIn'
 import CityList from './pages/admin/city/CityList'
 import CityCreate from './pages/admin/city/CityCreate'
 import EditCity from './pages/admin/city/EditCity'
+import ScheduleList from './pages/admin/schedule/ScheduleList'
 
 const App = () => {
 
@@ -28,6 +29,7 @@ const App = () => {
             <Route path="/admin/cities/" element={<CityList />} />
             <Route path="/admin/cities/addCity" element={<CityCreate />} />
             <Route path="/admin/cities/:id/edit" element={<EditCity />} />
+            <Route path="/admin/schedules/" element={<ScheduleList />} />
           </Routes>
         </Router>
     </>

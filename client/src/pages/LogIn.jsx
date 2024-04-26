@@ -33,11 +33,24 @@ const LogIn = () => {
         }
     };
 
-    const handleLoginSuccess = (token) => {
+    const handleLoginSuccess = (token, userId, userRole) => {
         // Store the token in local storage
         localStorage.setItem('token', token);
-        // Redirect the user to the main page
-        window.location.href = '/';
+        localStorage.setItem('userId', userId);
+        localStorage.setItem('userRole', userRole);
+
+        // Redirect the user based on their role
+        if (userRole === 0) {
+            // Redirect user to main page
+            window.location.href = '/';
+        } else if (userRole === 1) {
+            // Redirect user to admin page
+            window.location.href = '/admin';
+        } else {
+            // Handle other roles if needed
+            // For now, redirect to main page
+            window.location.href = '/';
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -50,7 +63,7 @@ const LogIn = () => {
                 });
                 console.log(response.data);
                 // Call handleLoginSuccess and pass the token
-                handleLoginSuccess(response.data.token);
+                handleLoginSuccess(response.data.token, response.data.userId, response.data.userRole);
             } catch (error) {
                 console.error(error);
                 setError("Email or Password is incorrect, please try again.");
