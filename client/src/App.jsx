@@ -24,6 +24,7 @@ import EditStop from './pages/admin/stop/StopEdit'
 import StopCreate from './pages/admin/stop/StopCreate'
 import UserList from './pages/admin/user/UserList'
 import EditUser from './pages/admin/user/EditUser'
+import UserCreate from './pages/admin/user/UserCreate'
 
 
 
@@ -52,6 +53,7 @@ const App = () => {
             <Route path="/admin/stops/addStop" element={<StopCreate />} />
             <Route path="/admin/users/" element={<UserList />} />
             <Route path="/admin/users/:id/edit" element={<EditUser />} />
+            <Route path="/admin/users/addUser" element={<UserCreate />} />
 
 
           </Routes>
