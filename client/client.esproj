@@ -10,5 +10,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="src\pages\admin\city\" />
+    <Folder Include="src\pages\admin\line\" />
+    <Folder Include="src\pages\admin\user\" />
+    <Folder Include="src\pages\admin\operator\" />
+    <Folder Include="src\pages\admin\stop\" />
   </ItemGroup>
 </Project>

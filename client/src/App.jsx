@@ -16,6 +16,7 @@ import EditCity from './pages/admin/city/EditCity'
 import ScheduleList from './pages/admin/schedule/ScheduleList'
 import EditSchedule from './pages/admin/schedule/EditSchedule';
 import ScheduleCreate from './pages/admin/schedule/ScheduleCreate';
+import LineList from './pages/admin/line/LineList'
 
 const App = () => {
 
@@ -34,7 +35,7 @@ const App = () => {
             <Route path="/admin/schedules/" element={<ScheduleList />} />
             <Route path="/admin/schedules/addSchedule" element={<ScheduleCreate />} />
             <Route path="/admin/schedules/:id/edit" element={<EditSchedule />} />
-
+            <Route path="/admin/lines/" element={<LineList />} />
           </Routes>
         </Router>
     </>
@@ -42,3 +43,4 @@ const App = () => {
 };
 
 export default App;
+
