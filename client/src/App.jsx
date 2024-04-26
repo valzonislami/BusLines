@@ -18,6 +18,7 @@ import EditSchedule from './pages/admin/schedule/EditSchedule';
 import ScheduleCreate from './pages/admin/schedule/ScheduleCreate';
 import LineList from './pages/admin/line/LineList'
 import LineCreate from './pages/admin/line/LineCreate'
+import EditLine from './pages/admin/line/EditLine'
 
 const App = () => {
 
@@ -38,6 +39,8 @@ const App = () => {
             <Route path="/admin/schedules/:id/edit" element={<EditSchedule />} />
             <Route path="/admin/lines/" element={<LineList />} />
             <Route path="/admin/lines/addLine" element={<LineCreate />} />
+            <Route path="/admin/lines/:id/edit" element={<EditLine />} />
+
           </Routes>
         </Router>
     </>
