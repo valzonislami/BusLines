@@ -41,6 +41,11 @@ const BusScheduleList = () => {
                 <div className="bg-white shadow-md rounded-xl my-6">
                     <div className="flex justify-between items-center border-b border-gray-200 p-6">
                         <h2 className="text-xl font-bold text-gray-700">Bus Schedule List</h2>
+                        <Link to="/admin/schedules/addSchedule">
+                            <button className="bg-orange-400 text-white font-medium py-2 px-4 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-orange-400 hover:bg-orange-500">
+                                Add new
+                            </button>
+                        </Link>
                     </div>
                     <div className="w-full overflow-x-auto">
                         <table className="w-full whitespace-no-wrap">
