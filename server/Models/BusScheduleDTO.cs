@@ -1,9 +1,4 @@
-﻿using server.Entities;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace server.Models
+﻿namespace server.Models
 {
     public class BusScheduleDTO
     {

@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using server.DataAccess;
-using server.DTOs;
 using server.Entities;
+using server.Models;
 
 namespace server.Services
 {

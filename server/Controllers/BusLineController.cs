@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using server.DTOs;
+using server.Models;
 using server.Services;
 
 namespace server.Controllers
@@ -9,9 +9,9 @@ namespace server.Controllers
     [Route("[controller]")]
     public class BusLineController : ControllerBase
     {
-        private readonly BusLineService _busLineService;
+        private readonly IBusLineService _busLineService;
 
-        public BusLineController(BusLineService busLineService)
+        public BusLineController(IBusLineService busLineService)
         {
             _busLineService = busLineService;
         }

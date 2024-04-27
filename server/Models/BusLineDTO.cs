@@ -1,4 +1,4 @@
-﻿namespace server.DTOs
+﻿namespace server.Models
 {
     public class BusLineDTO
     {

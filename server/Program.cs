@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using server.DataAccess;
 using server.Mappings;
 using server.Services;
+using server.Services.Imp;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,8 +33,14 @@ builder.Services.AddCors(options =>
 builder.Services.AddDbContext<BusDbContext>(options =>
 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
-// Register BusLineService
-builder.Services.AddScoped<BusLineService>();
+//Register BusLineService
+builder.Services.AddScoped<IBusLineService, BusLineService>();
+
+// Register BusScheduleService
+builder.Services.AddScoped<IBusScheduleService, BusScheduleService>();
+
+//Register CityService
+builder.Services.AddScoped<ICityService, CityService>();
 
 // Register JwtService
 builder.Services.AddSingleton<JwtService>();
