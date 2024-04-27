@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using server.DataAccess;
-using server.Entities;
-using System.Linq;
-using System.Threading.Tasks;
+using server.Models;
+using server.Services;
 
 namespace server.Controllers
 {
@@ -11,24 +8,24 @@ namespace server.Controllers
     [Route("[controller]")]
     public class OperatorController : ControllerBase
     {
-        private readonly BusDbContext _context;
+        private readonly IOperatorService _operatorService;
 
-        public OperatorController(BusDbContext context)
+        public OperatorController(IOperatorService operatorService)
         {
-            _context = context;
+            _operatorService = operatorService;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetOperators()
         {
-            var operators = await _context.Operators.ToListAsync();
+            var operators = await _operatorService.GetOperatorsAsync();
             return Ok(operators);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOperator(int id)
         {
-            var oper = await _context.Operators.FindAsync(id);
+            var oper = await _operatorService.GetOperatorByIdAsync(id);
             if (oper == null)
             {
                 return NotFound();
@@ -37,83 +34,45 @@ namespace server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddOperator([FromBody] OperatorDTO OperatorDTO)
+        public async Task<IActionResult> AddOperator([FromBody] OperatorDTO operatorDTO)
         {
-            var existingOperator = await _context.Operators.FirstOrDefaultAsync(c => c.Name == OperatorDTO.Name);
-            if (existingOperator != null)
+            try
             {
-                return Conflict("Operator already exists.");
+                var oper = await _operatorService.AddOperatorAsync(operatorDTO);
+                return CreatedAtAction(nameof(GetOperator), new { id = oper.Id }, oper);
             }
-
-            var oper = new Operator
+            catch (ArgumentException ex)
             {
-                Name = OperatorDTO.Name
-            };
-
-            _context.Operators.Add(oper);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetOperator), new { id = oper.Id }, oper);
+                return Conflict(ex.Message);
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateOperator(int id, [FromBody] OperatorDTO operatorDTO)
         {
-            var oper = await _context.Operators.FindAsync(id);
-            if (oper == null)
-            {
-                return NotFound();
-            }
-
-            // Update only if the Name property in the DTO is not null or empty
-            if (!string.IsNullOrWhiteSpace(operatorDTO.Name))
-            {
-                oper.Name = operatorDTO.Name;
-            }
-
-            _context.Entry(oper).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await _operatorService.UpdateOperatorAsync(id, operatorDTO);
+                return NoContent();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (ArgumentException ex)
             {
-                if (!OperatorExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound(ex.Message);
             }
-
-            return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOperator(int id)
         {
-            var oper = await _context.Operators.FindAsync(id);
-            if (oper == null)
+            try
             {
-                return NotFound();
+                await _operatorService.DeleteOperatorAsync(id);
+                return NoContent();
             }
-
-            _context.Operators.Remove(oper);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
-
-        private bool OperatorExists(int id)
-        {
-            return _context.Operators.Any(e => e.Id == id);
-        }
-    }
-
-    public class OperatorDTO
-    {
-        public string Name { get; set; }
     }
 }

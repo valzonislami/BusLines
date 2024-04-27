@@ -20,6 +20,7 @@ namespace server.Services
         public async Task<List<BusLine>> GetBusLinesAsync()
         {
             return await _context.BusLines
+                // Include the start city and destination city for each bus line
                 .Include(bl => bl.StartCity)
                 .Include(bl => bl.DestinationCity)
                 .ToListAsync();
@@ -28,44 +29,54 @@ namespace server.Services
         public async Task<BusLine> GetBusLineAsync(int id)
         {
             return await _context.BusLines
+                // Include the start city and destination city for each bus line
                 .Include(bl => bl.StartCity)
                 .Include(bl => bl.DestinationCity)
+                // Find the bus line with the specified ID
                 .FirstOrDefaultAsync(bl => bl.Id == id);
         }
 
         public async Task<BusLine> AddBusLineAsync(BusLineDTO busLineDTO)
         {
+            // Find the start and destination cities by their names
             var startCity = await _context.Cities.FirstOrDefaultAsync(c => c.Name == busLineDTO.StartCityName);
             var destinationCity = await _context.Cities.FirstOrDefaultAsync(c => c.Name == busLineDTO.DestinationCityName);
 
+            // Check if the start and destination cities are found
             if (startCity == null || destinationCity == null)
             {
                 throw new ArgumentException("Invalid start city or destination city name.");
             }
 
+            // Create a new bus line
             var busLine = new BusLine
             {
                 StartCityId = startCity.Id,
                 DestinationCityId = destinationCity.Id
             };
 
+            // Add the bus line to the database
             _context.BusLines.Add(busLine);
             await _context.SaveChangesAsync();
 
+            // Return the added bus line
             return busLine;
         }
 
         public async Task UpdateBusLineAsync(int id, BusLineDTO busLineDTO)
         {
+            // Find the bus line with the specified ID
             var existingBusLine = await _context.BusLines.FindAsync(id);
             if (existingBusLine == null)
             {
                 throw new KeyNotFoundException($"BusLine with ID {id} not found.");
             }
 
+            // Find the start and destination cities by their names
             var startCity = await _context.Cities.FirstOrDefaultAsync(c => c.Name == busLineDTO.StartCityName);
             var destinationCity = await _context.Cities.FirstOrDefaultAsync(c => c.Name == busLineDTO.DestinationCityName);
 
+            // Check if the start and destination cities are found
             if (startCity == null && !string.IsNullOrWhiteSpace(busLineDTO.StartCityName))
             {
                 throw new ArgumentException("Start city not found.");
@@ -76,28 +87,32 @@ namespace server.Services
                 throw new ArgumentException("Destination city not found.");
             }
 
+            // Update the bus line's start and destination cities
             existingBusLine.StartCityId = startCity?.Id ?? existingBusLine.StartCityId; // Use null-coalescing for optional assignment
             existingBusLine.DestinationCityId = destinationCity?.Id ?? existingBusLine.DestinationCityId;
 
             try
             {
+                // Mark the bus line as modified and save changes
                 _context.Entry(existingBusLine).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                throw;  // Re-throw the exception for handling in the controller
+                throw;
             }
         }
 
         public async Task DeleteBusLineAsync(int id)
         {
+            // Find the bus line with the specified ID
             var busLine = await _context.BusLines.FindAsync(id);
             if (busLine == null)
             {
                 throw new KeyNotFoundException($"BusLine with ID {id} not found.");
             }
 
+            // Remove the bus line from the database
             _context.BusLines.Remove(busLine);
             await _context.SaveChangesAsync();
         }
