@@ -1,12 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using server.DataAccess;
-using server.Models;
-using server.Entities;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using server.DTOs;
+using server.Models;
+using server.Services;
 
 namespace server.Controllers
 {
@@ -14,137 +9,71 @@ namespace server.Controllers
     [ApiController]
     public class StopController : ControllerBase
     {
-        private readonly BusDbContext _context;
+        private readonly IStopService _stopService;
 
-        public StopController(BusDbContext context)
+        public StopController(IStopService stopService)
         {
-            _context = context;
+            _stopService = stopService;
         }
 
-        // GET: api/Stop
         [HttpGet]
         public async Task<ActionResult<IEnumerable<StopDTO>>> GetStops()
         {
-            var stops = await _context.Stops
-                .Include(s => s.City)
-                .Select(s => new StopDTO
-                {
-                    Id = s.Id,
-                    StationName = s.StationName,
-                    CityName = s.City.Name,
-                    BusScheduleIds = s.BusScheduleStops.Select(bss => bss.BusScheduleId).ToList()
-                })
-                .ToListAsync();
-
+            var stops = await _stopService.GetStopsAsync();
             return stops;
         }
 
-        // GET: api/Stop/5
         [HttpGet("{id}")]
         public async Task<ActionResult<StopDTO>> GetStop(int id)
         {
-            var stop = await _context.Stops
-                .Include(s => s.City)
-                .Include(s => s.BusScheduleStops) // Include BusScheduleStops navigation property
-                .FirstOrDefaultAsync(s => s.Id == id);
-
+            var stop = await _stopService.GetStopByIdAsync(id);
             if (stop == null)
             {
                 return NotFound();
             }
-
-            var stopDTO = new StopDTO
-            {
-                Id = stop.Id,
-                StationName = stop.StationName,
-                CityName = stop.City.Name,
-                BusScheduleIds = stop.BusScheduleStops?.Select(bss => bss.BusScheduleId).ToList() ?? new List<int>() // Use null conditional operator to handle null BusScheduleStops
-            };
-
-            return stopDTO;
+            return stop;
         }
 
-
-        // POST: api/Stop
         [HttpPost]
         public async Task<ActionResult<StopDTO>> PostStop(StopPostDTO stopDTO)
         {
-            var city = await _context.Cities.FirstOrDefaultAsync(c => c.Name == stopDTO.CityName);
-            if (city == null)
+            try
             {
-                // City not found, return BadRequest
-                return BadRequest("City not found");
+                var stop = await _stopService.AddStopAsync(stopDTO);
+                return CreatedAtAction(nameof(GetStop), new { id = stop.Id }, stop);
             }
-
-            var stop = new Stop
+            catch (ArgumentException ex)
             {
-                CityId = city.Id,
-                StationName = stopDTO.StationName
-            };
-
-            _context.Stops.Add(stop);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetStop), new { id = stop.Id }, new StopDTO
-            {
-                Id = stop.Id,
-                StationName = stop.StationName,
-                CityName = city.Name
-            });
+                return BadRequest(ex.Message);
+            }
         }
 
-
-        // PUT: api/Stop/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateStop(int id, [FromBody] StopPostDTO stopDto)
         {
-            var existingStop = await _context.Stops.FindAsync(id);
-
-            if (existingStop == null)
+            try
             {
-                return NotFound();
+                await _stopService.UpdateStopAsync(id, stopDto);
+                return NoContent();
             }
-
-            // Fetch CityName through CityId from City Entity
-            var cityName = await _context.Cities.FirstOrDefaultAsync(c => c.Name == stopDto.CityName);
-
-            if (cityName == null)
+            catch (ArgumentException ex)
             {
-                // Handle if the city is not found for the given CityId
-                return NotFound("City not found for the given CityId");
+                return NotFound(ex.Message);
             }
-            if (!string.IsNullOrWhiteSpace(stopDto.CityName))
-            {
-                existingStop.CityId = cityName.Id;
-            }
-
-            existingStop.StationName = stopDto.StationName;
-
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
 
-
-        // DELETE: api/Stop/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteStop(int id)
         {
-            var stop = await _context.Stops.FindAsync(id);
-            if (stop == null)
+            try
             {
-                return NotFound();
+                await _stopService.DeleteStopAsync(id);
+                return NoContent();
             }
-
-            _context.Stops.Remove(stop);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool StopExists(int id)
-        {
-            return _context.Stops.Any(e => e.Id == id);
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
     }
 }

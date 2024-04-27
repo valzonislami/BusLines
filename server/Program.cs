@@ -48,6 +48,9 @@ builder.Services.AddScoped<ITicketService, TicketService>();
 //Register UserService
 builder.Services.AddScoped<IUserService, UserService>();
 
+//Register UserService
+builder.Services.AddScoped<IStopService, StopService>();
+
 // Register JwtService
 builder.Services.AddSingleton<JwtService>();
 
