@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using server.DataAccess;
 using server.Mappings;
+using server.Services;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,6 +31,9 @@ builder.Services.AddCors(options =>
 // Configure Database Connection
 builder.Services.AddDbContext<BusDbContext>(options =>
 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+
+// Register BusLineService
+builder.Services.AddScoped<BusLineService>();
 
 // Register JwtService
 builder.Services.AddSingleton<JwtService>();
