@@ -42,6 +42,9 @@ builder.Services.AddScoped<IBusScheduleService, BusScheduleService>();
 //Register CityService
 builder.Services.AddScoped<ICityService, CityService>();
 
+//Register TicketService
+builder.Services.AddScoped<ITicketService, TicketService>();
+
 //Register UserService
 builder.Services.AddScoped<IUserService, UserService>();
 
