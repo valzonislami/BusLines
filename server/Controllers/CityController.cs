@@ -1,9 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using server.DataAccess;
-using server.Entities;
-using System.Linq;
-using System.Threading.Tasks;
+using server.Models;
+using server.Services;
 
 namespace server.Controllers
 {
@@ -11,24 +8,24 @@ namespace server.Controllers
     [Route("[controller]")]
     public class CityController : ControllerBase
     {
-        private readonly BusDbContext _context;
+        private readonly ICityService _cityService;
 
-        public CityController(BusDbContext context)
+        public CityController(ICityService cityService)
         {
-            _context = context;
+            _cityService = cityService;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetCities()
         {
-            var cities = await _context.Cities.ToListAsync();
+            var cities = await _cityService.GetCitiesAsync();
             return Ok(cities);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCity(int id)
         {
-            var city = await _context.Cities.FindAsync(id);
+            var city = await _cityService.GetCityByIdAsync(id);
             if (city == null)
             {
                 return NotFound();
@@ -39,82 +36,43 @@ namespace server.Controllers
         [HttpPost]
         public async Task<IActionResult> AddCity([FromBody] CityDTO cityDTO)
         {
-            var existingCity = await _context.Cities.FirstOrDefaultAsync(c => c.Name == cityDTO.Name);
-            if (existingCity != null)
+            try
             {
-                return Conflict("City already exists.");
+                var city = await _cityService.AddCityAsync(cityDTO);
+                return CreatedAtAction(nameof(GetCity), new { id = city.Id }, city);
             }
-
-            var city = new City
+            catch (ArgumentException ex)
             {
-                Name = cityDTO.Name
-            };
-
-            _context.Cities.Add(city);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetCity), new { id = city.Id }, city);
+                return Conflict(ex.Message);
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCity(int id, [FromBody] CityDTO cityDTO)
         {
-            var city = await _context.Cities.FindAsync(id);
-            if (city == null)
-            {
-                return NotFound();
-            }
-
-            // Update the city name only if it's not null or empty in the DTO
-            if (!string.IsNullOrWhiteSpace(cityDTO.Name))
-            {
-                city.Name = cityDTO.Name;
-            }
-
-            _context.Entry(city).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await _cityService.UpdateCityAsync(id, cityDTO);
+                return NoContent();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (ArgumentException ex)
             {
-                if (!CityExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound(ex.Message);
             }
-
-            return NoContent();
         }
-
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCity(int id)
         {
-            var city = await _context.Cities.FindAsync(id);
-            if (city == null)
+            try
             {
-                return NotFound();
+                await _cityService.DeleteCityAsync(id);
+                return NoContent();
             }
-
-            _context.Cities.Remove(city);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
-
-        private bool CityExists(int id)
-        {
-            return _context.Cities.Any(e => e.Id == id);
-        }
-    }
-
-    public class CityDTO
-    {
-        public string Name { get; set; }
     }
 }
