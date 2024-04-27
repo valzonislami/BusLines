@@ -42,6 +42,9 @@ builder.Services.AddScoped<IBusScheduleService, BusScheduleService>();
 //Register CityService
 builder.Services.AddScoped<ICityService, CityService>();
 
+//Register UserService
+builder.Services.AddScoped<IUserService, UserService>();
+
 // Register JwtService
 builder.Services.AddSingleton<JwtService>();
 
