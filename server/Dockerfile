@@ -14,7 +14,7 @@ COPY ["server.csproj", "./server/"]
 RUN dotnet restore "./server/server.csproj"
 
 Copy the rest of your source code
-COPY . ./backend/
+COPY . ./server/
 WORKDIR "/src/server"
 RUN dotnet build "server.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
