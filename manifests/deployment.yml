@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: valzonislamibuslines 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: valzonislamibuslines
+  template:
+    metadata:
+      labels:
+        app: valzonislamibuslines 
+    spec:
+      containers:
+        - name: valzonislamibuslines 
+          image: buslines.azurecr.io/valzonislamibuslines
+          ports:
+          - containerPort: 8080
