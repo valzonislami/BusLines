@@ -1,34 +1,53 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-// Images Imports
-import BusLogo from "../assets/BusLogo.svg";
-import UserOrange from "../assets/UserSvg-orange.svg";
-
-const NavBar = (props) => {
+const NavBar = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [userRole, setUserRole] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const userId = localStorage.getItem('userId');
-        {userId && setIsLoggedIn(true)};
+        const userRole = localStorage.getItem('userRole');
+        setIsLoggedIn(!!userId); // Set isLoggedIn to true if userId exists
+        setUserRole(userRole);
     }, []);
 
+    const handleLogout = () => {
+        setIsLoggedIn(false);
+        setUserRole(null); // Reset userRole to null
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userRole');
+        navigate('/');
+    };
+
     return (
-        <nav className="flex flex-row items-center py-5 px-5 justify-between w-full">
+        <nav className="flex flex-row items-center py-5 px-20 justify-between w-full">
             <Link to="../">
                 <div className="flex items-center">
-                    <img src={BusLogo} alt="Buslines Logo " />
-                    <h1 className="text-3xl ml-1 font-semibold flex text-offBlack">Bus <span className="text-primary">Lines</span></h1>
+                    <h1 className="text-4xl ml-1 font-thin flex text-offBlack font-sans">Bus <span className="text-orange-400">Lines</span></h1>
                 </div>
             </Link>
-            {!isLoggedIn ?
-                <Link to="../authentication"> 
-                    <img src={UserOrange} alt="Log In Page" />
-                </Link> :
-                <Link to="../profile">
-                    <img src={UserOrange} alt="Your Profile" />
-                </Link>
-            }
+            <div className="flex items-center text-offBlack">
+                {userRole === "1" && (
+                    <Link to="/admin" className="mr-4 text-medium">Admin Panel</Link>
+                )}
+                {isLoggedIn && userRole !== "0" && (
+                    <span className="mr-4">|</span>
+                )}
+                {isLoggedIn && (
+                    <Link to="../profile" className="mr-4 text-medium">Profile</Link>
+                )}
+                {isLoggedIn && (
+                    <span className="mr-4">|</span>
+                )}
+                {isLoggedIn ? (
+                    <button onClick={handleLogout} className="mr-4 text-medium">Log Out</button>
+                ) : (
+                    <Link to="../authentication" className="mr-4 text-medium">Log In</Link>
+                )}
+            </div>
         </nav>
     );
 };

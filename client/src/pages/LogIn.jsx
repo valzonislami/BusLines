@@ -2,6 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import BusLogo from "../assets/BusLogo.svg";
 import { Link } from 'react-router-dom';
+import Footer from "../components/Footer";
 
 
 const LogIn = () => {
@@ -94,55 +95,58 @@ const LogIn = () => {
     };
 
     return (
-        <div className="min-h-screen flex justify-center items-center bg-white">
-            <div className="max-w-md w-full">
-                <div className={`bg-white py-8 px-6 rounded-lg shadow-2xl ${mode === 'login' ? 'bg-opacity-90' : 'bg-opacity-80'}`}>
-                    <Link to="../">
-                        <div className="flex justify-center mb-8">
-                            <img src={BusLogo} alt="Buslines Logo " />
+        <>
+            <div className="min-h-screen flex justify-center items-center bg-white">
+                <div className="max-w-md w-full">
+                    <div className={`bg-white py-8 px-6 rounded-lg shadow-2xl ${mode === 'login' ? 'bg-opacity-90' : 'bg-opacity-80'}`}>
+                        <Link to="../">
+                            <div className="flex justify-center mb-8">
+                                <img src={BusLogo} alt="Buslines Logo " />
+                            </div>
+                        </Link>
+                        <h1 className="text-3xl font-normal text-center text-black mb-8">{mode === 'login' ? 'Miresevini!' : 'Regjistrohu'}</h1>
+                        {error && <div className="mb-4 text-orange-400">{error}</div>} {/* Apply custom style to error message */}
+                        <form onSubmit={handleSubmit}>
+                            {mode !== 'signup' && (
+                                <>
+                                    <div className="mb-6">
+                                        <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="email" id="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                                    </div>
+                                    <div className="mb-6">
+                                        <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="password" id="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                                    </div>
+                                </>
+                            )}
+                            {mode === 'signup' && (
+                                <>
+                                    <div className="mb-6">
+                                        <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="text" id="firstname" placeholder="Emri" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
+                                    </div>
+                                    <div className="mb-6">
+                                        <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="text" id="lastname" placeholder="Mbiemri" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
+                                    </div>
+                                    <div className="mb-6">
+                                        <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="email" id="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                                    </div>
+                                    <div className="mb-6">
+                                        <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="password" id="createpassword" placeholder="Shkruaj passwordin" value={createPassword} onChange={(e) => setCreatePassword(e.target.value)} required />
+                                    </div>
+                                    <div className="mb-6">
+                                        <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="password" id="repeatpassword" placeholder="Perserit passwordin" value={repeatPassword} onChange={(e) => setRepeatPassword(e.target.value)} required />
+                                    </div>
+                                </>
+                            )}
+                            <button className="w-full bg-orange-400 hover:bg-orange-500 py-3 rounded-md text-white font-semibold transition duration-300 ease-in-out" type="submit">{mode === 'login' ? 'Kyqu' : 'Regjistrohu'}</button>
+                        </form>
+                        <div className="mt-6 text-center text-gray-800">
+                            <span>{mode === 'login' ? "Nuk keni" : 'Keni'} llogari?</span>
+                            <button className="ml-2 text-orange-400 hover:underline focus:outline-none" onClick={toggleMode}>{mode === 'login' ? 'Regjistrohu' : 'Kyqu'}</button>
                         </div>
-                    </Link>
-                    <h1 className="text-3xl font-normal text-center text-black mb-8">{mode === 'login' ? 'Miresevini!' : 'Regjistrohu'}</h1>
-                    {error && <div className="mb-4 text-orange-400">{error}</div>} {/* Apply custom style to error message */}
-                    <form onSubmit={handleSubmit}>
-                        {mode !== 'signup' && (
-                            <>
-                                <div className="mb-6">
-                                    <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="email" id="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                                </div>
-                                <div className="mb-6">
-                                    <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="password" id="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-                                </div>
-                            </>
-                        )}
-                        {mode === 'signup' && (
-                            <>
-                                <div className="mb-6">
-                                    <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="text" id="firstname" placeholder="Emri" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
-                                </div>
-                                <div className="mb-6">
-                                    <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="text" id="lastname" placeholder="Mbiemri" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
-                                </div>
-                                <div className="mb-6">
-                                    <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="email" id="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                                </div>
-                                <div className="mb-6">
-                                    <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="password" id="createpassword" placeholder="Shkruaj passwordin" value={createPassword} onChange={(e) => setCreatePassword(e.target.value)} required />
-                                </div>
-                                <div className="mb-6">
-                                    <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="password" id="repeatpassword" placeholder="Perserit passwordin" value={repeatPassword} onChange={(e) => setRepeatPassword(e.target.value)} required />
-                                </div>
-                            </>
-                        )}
-                        <button className="w-full bg-orange-400 hover:bg-orange-500 py-3 rounded-md text-white font-semibold transition duration-300 ease-in-out" type="submit">{mode === 'login' ? 'Kyqu' : 'Regjistrohu'}</button>
-                    </form>
-                    <div className="mt-6 text-center text-gray-800">
-                        <span>{mode === 'login' ? "Nuk keni" : 'Keni'} llogari?</span>
-                        <button className="ml-2 text-orange-400 hover:underline focus:outline-none" onClick={toggleMode}>{mode === 'login' ? 'Regjistrohu' : 'Kyqu'}</button>
                     </div>
                 </div>
             </div>
-        </div>
+            <Footer />
+        </>
     );
 };
 

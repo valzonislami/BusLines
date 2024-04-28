@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import NavBar from "../components/NavBar"
 import Line from '../components/Line';
+import Footer from "../components/Footer"
 
 const Lines = () => {
     const location = useLocation();
@@ -152,6 +153,7 @@ const Lines = () => {
                     </div>
                 </div>
             </div>
+            <Footer />
         </>
     );
 };

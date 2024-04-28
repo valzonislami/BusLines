@@ -47,7 +47,7 @@ const TravelTo = () => {
                     {logos.map((logo) => (
                         <li key={logo.text} className="mr-4 flex flex-col items-center">
                             <img src={logo.image} alt={logo.text} className="w-[200px] h-[200px]  object-contain" />
-                            <p className="font-serif" value={startCity}>{logo.text}</p>
+                            <p value={startCity}>{logo.text}</p>
                             <button onClick={() => handleSubmit(logo.text)} className="text-sm focus:outline-none text-orange-400">
                                 Shiko linjen
                             </button>
