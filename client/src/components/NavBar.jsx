@@ -37,15 +37,15 @@ const NavBar = () => {
                     <span className="mr-4">|</span>
                 )}
                 {isLoggedIn && (
-                    <Link to="../profile" className="mr-4 text-medium">Profile</Link>
+                    <Link to="../profile" className="mr-4 text-medium">Profili</Link>
                 )}
                 {isLoggedIn && (
                     <span className="mr-4">|</span>
                 )}
                 {isLoggedIn ? (
-                    <button onClick={handleLogout} className="mr-4 text-medium">Log Out</button>
+                    <button onClick={handleLogout} className="mr-4 text-medium">Dil</button>
                 ) : (
-                    <Link to="../authentication" className="mr-4 text-medium">Log In</Link>
+                        <Link to="../authentication" className="mr-4 text-medium">Ky&ccedil;u</Link>
                 )}
             </div>
         </nav>

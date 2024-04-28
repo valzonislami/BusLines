@@ -4,7 +4,6 @@ import BusLogo from "../assets/BusLogo.svg";
 import { Link } from 'react-router-dom';
 import Footer from "../components/Footer";
 
-
 const LogIn = () => {
     const [mode, setMode] = useState('login');
     const [email, setEmail] = useState('');
@@ -13,21 +12,17 @@ const LogIn = () => {
     const [lastName, setLastName] = useState('');
     const [createPassword, setCreatePassword] = useState('');
     const [repeatPassword, setRepeatPassword] = useState('');
-    const [error, setError] = useState('');
+    const [message, setMessage] = useState(''); // Renamed from setError to setMessage
 
     const toggleMode = () => {
         setMode(prevMode => (prevMode === 'login' ? 'signup' : 'login'));
-        setError(''); // Reset error message when toggling mode
+        setMessage(''); // Reset message when toggling mode
     };
 
     const checkExistingEmail = async (email) => {
         try {
             const response = await axios.get(`https://localhost:7264/User?email=${email}`);
-            if (response.data && response.data.length > 0) {
-                return true; // Email exists
-            } else {
-                return false; // Email doesn't exist
-            }
+            return response.data && response.data.length > 0;
         } catch (error) {
             console.error(error);
             return false; // Assume email doesn't exist on error
@@ -35,48 +30,30 @@ const LogIn = () => {
     };
 
     const handleLoginSuccess = (token, userId, userRole) => {
-        // Store the token in local storage
         localStorage.setItem('token', token);
         localStorage.setItem('userId', userId);
         localStorage.setItem('userRole', userRole);
-
-        // Redirect the user based on their role
-        if (userRole === 0) {
-            // Redirect user to main page
-            window.location.href = '/';
-        } else if (userRole === 1) {
-            // Redirect user to admin page
-            window.location.href = '/admin';
-        } else {
-            // Handle other roles if needed
-            // For now, redirect to main page
-            window.location.href = '/';
-        }
+        window.location.href = userRole === 1 ? '/admin' : '/';
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (mode === 'login') {
             try {
-                const response = await axios.post('https://localhost:7264/user/login', {
-                    email,
-                    password,
-                });
-                console.log(response.data);
-                // Call handleLoginSuccess and pass the token
+                const response = await axios.post('https://localhost:7264/user/login', { email, password });
                 handleLoginSuccess(response.data.token, response.data.userId, response.data.userRole);
             } catch (error) {
                 console.error(error);
-                setError("Email or Password is incorrect, please try again.");
+                setMessage("Keni gabuar te dhenat, ju lutem provoni perseri!");
             }
         } else {
             if (createPassword !== repeatPassword) {
-                setError("Passwords do not match");
-                return; // Prevent further execution if passwords don't match
+                setMessage("Fjalekalimi nuk perputhet!");
+                return;
             }
             const emailExists = await checkExistingEmail(email);
             if (emailExists) {
-                setError("Email already exists, you can try login with this email.");
+                setMessage("Kjo email adrese egziston!");
                 return;
             }
             try {
@@ -87,9 +64,16 @@ const LogIn = () => {
                     password: createPassword,
                 });
                 console.log(response.data);
+                // Clear form fields and show success message
+                setFirstName('');
+                setLastName('');
+                setEmail('');
+                setCreatePassword('');
+                setRepeatPassword('');
+                setMessage("U regjistruat me sukses!");
             } catch (error) {
                 console.error(error);
-                setError("An error occurred while signing up. Please try again later.");
+                setMessage("Ka ndodhur nje problem, ju lutem provoni me vone!");
             }
         }
     };
@@ -105,7 +89,7 @@ const LogIn = () => {
                             </div>
                         </Link>
                         <h1 className="text-3xl font-normal text-center text-black mb-8">{mode === 'login' ? 'Miresevini!' : 'Regjistrohu'}</h1>
-                        {error && <div className="mb-4 text-orange-400">{error}</div>}
+                        {message && <div className={`mb-4 ${message.startsWith('U regjistruat') ? 'text-green-500' : 'text-orange-400'}`}>{message}</div>}
                         <form onSubmit={handleSubmit}>
                             {mode !== 'signup' && (
                                 <>
@@ -113,7 +97,7 @@ const LogIn = () => {
                                         <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="email" id="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                                     </div>
                                     <div className="mb-6">
-                                        <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="password" id="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                                        <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="password" id="password" placeholder="Fjalekalimi" value={password} onChange={(e) => setPassword(e.target.value)} required />
                                     </div>
                                 </>
                             )}
@@ -129,14 +113,15 @@ const LogIn = () => {
                                         <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="email" id="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                                     </div>
                                     <div className="mb-6">
-                                        <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="password" id="createpassword" placeholder="Shkruaj passwordin" value={createPassword} onChange={(e) => setCreatePassword(e.target.value)} required />
+                                        <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="password" id="createpassword" placeholder="Shkruaj fjalekalimin" value={createPassword} onChange={(e) => setCreatePassword(e.target.value)} required />
                                     </div>
                                     <div className="mb-6">
-                                        <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="password" id="repeatpassword" placeholder="Perserit passwordin" value={repeatPassword} onChange={(e) => setRepeatPassword(e.target.value)} required />
+                                        <input className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out" type="password" id="repeatpassword" placeholder="Perserit fjalekalimin" value={repeatPassword} onChange={(e) => setRepeatPassword(e.target.value)} required />
                                     </div>
                                 </>
                             )}
                             <button className="w-full bg-orange-400 hover:bg-orange-500 py-3 rounded-md text-white font-semibold transition duration-300 ease-in-out" type="submit">{mode === 'login' ? 'Kyqu' : 'Regjistrohu'}</button>
+
                         </form>
                         <div className="mt-6 text-center text-gray-800">
                             <span>{mode === 'login' ? "Nuk keni" : 'Keni'} llogari?</span>

@@ -15,25 +15,31 @@ const Line = ({ onClose, schedule, departureDate, departureTime, arrivalDate, ar
             return;
         }
 
-        try {
-            // Make a POST request to create a ticket
-            const response = await axios.post(
-                'https://localhost:7264/Ticket',
-                {
-                    busScheduleId: schedule.id,
-                    userId: userId,
-                    dateOfBooking: new Date()
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`
+        // Confirm reservation with the user
+        const confirmReservation = window.confirm('Konfirmo se deshironi te rezervoni bileten.');
+        if (confirmReservation) {
+            try {
+                // Make a POST request to create a ticket
+                const response = await axios.post(
+                    'https://localhost:7264/Ticket',
+                    {
+                        busScheduleId: schedule.id,
+                        userId: userId,
+                        dateOfBooking: new Date()
+                    },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
                     }
-                }
-            );
-            console.log('Ticket created:', response.data);
-            onClose(); // Close the modal after successful reservation
-        } catch (error) {
-            console.error('Error creating ticket:', error.response.data);
+                );
+                console.log('Ticket created:', response.data);
+                alert('Keni rezervuar bileten me sukses!');
+                onClose(); // Close the modal after successful reservation
+            } catch (error) {
+                console.error('Error creating ticket:', error.response.data);
+                alert('Ndodhi nje gabim gjate rezervimit te biletës.');
+            }
         }
     };
 
@@ -79,9 +85,7 @@ const Line = ({ onClose, schedule, departureDate, departureTime, arrivalDate, ar
                             <span className="font-normal selection:bg-white selection:text-orange-400"> {totalPrice} &#8364;</span>
                         </p>
                     </div>
-
-                    {/* Reserve and Close buttons */}
-                    <button className="font-medium uppercase  bg-white px-4 py-2 rounded-2xl m-2 shadow-xl text-center hover:bg-orange-300 hover:text-white " onClick={handleReservation}>Rezervo</button>
+                    <button className="font-medium uppercase bg-white px-4 py-2 rounded-2xl m-2 shadow-xl text-center hover:bg-orange-300 hover:text-white" onClick={handleReservation}>Rezervo</button>
                     <button className="font-medium uppercase bg-white px-4 py-2 rounded-2xl m-2 shadow-xl text-center hover:bg-orange-300 hover:text-white" onClick={onClose}>Close</button>
                 </div>
             </div>

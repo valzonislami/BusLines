@@ -70,7 +70,7 @@ const Profile = () => {
                                 <div className="flex flex-col gap-4 justify-center">
                                     {tickets.map((ticket) => (
                                         <div>
-                                            <div className="bg-white rounded-lg shadow-md overflow-hidden w-[380px] md:w-[680px] lg:w-[750px] mb-2 border-b border-gray-200 mx-auto hover:bg-orange-50 ">
+                                            <div className="bg-white rounded-lg shadow-md overflow-hidden w-[380px] md:w-[680px] lg:w-[750px] mb-2 border-b border-gray-200 mx-auto hover:shadow-2xl">
                                                 <div className="flex items-center px-4 py-2 border-b border-gray-200 justify-between">
                                                     <h3 className="text-lg font-medium text-gray-900 mr-2">
                                                         {ticket.startCityName}
