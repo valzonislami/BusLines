@@ -41,25 +41,25 @@ const Line = ({ onClose, schedule, departureDate, departureTime, arrivalDate, ar
     return (
         <div className="modal-overlay">
             <div className="modal">
-                <div className="fixed uppercase top-0 right-0 h-full bg-orange-400 bg-opacity-5 z-50 modal-content pt-6 px-6 rounded-2xl w-[400px] ">
-                    <h1 className="text-lg font-medium uppercase text-gray-900 bg-white px-4 py-2 rounded-lg shadow-sm m-2 shadow-xl text-center hover:bg-orange-400 hover:text-white">Detajet e linjes</h1>
+                <div className="fixed uppercase top-0 right-0 h-full bg-gray-400 bg-opacity-5 z-50 modal-content pt-6 px-6 rounded-2xl w-[400px] ">
+                    <h1 className="text-lg font-medium uppercase text-gray-900 bg-white px-4 py-2 rounded-lg shadow-sm m-2 shadow-xl text-center hover:bg-orange-300 hover:text-white">Detajet e linjes</h1>
 
-                    <div className="bg-white px-4 py-2 rounded-2xl shadow-sm m-2 shadow-xl hover:bg-orange-400 hover:text-white">
+                    <div className="bg-white px-4 py-2 rounded-2xl shadow-sm m-2 shadow-xl hover:bg-orange-300 hover:text-white">
                         <p className="text-base select-none">Nisja</p>
                         <p className="text-lg font-medium selection:bg-white selection:text-orange-400"> {schedule.startCityName}</p>
                     </div>
-                    <div className="bg-white px-4 py-2 rounded-2xl shadow-sm m-2 shadow-xl hover:bg-orange-400 hover:text-white">
+                    <div className="bg-white px-4 py-2 rounded-2xl shadow-sm m-2 shadow-xl hover:bg-orange-300 hover:text-white">
                         <p className="text-base select-none">Destinacioni</p>
                         <p className="text-lg font-medium selection:bg-white selection:text-orange-400"> {schedule.destinationCityName}</p>
                     </div>
-                    <div className="bg-white px-4 py-2 rounded-2xl shadow-sm m-2 shadow-xl hover:bg-orange-400 hover:text-white">
+                    <div className="bg-white px-4 py-2 rounded-2xl shadow-sm m-2 shadow-xl hover:bg-orange-300 hover:text-white">
                         <p className="text-base select-none">Operatori</p>
                         <p className="text-lg0 font-medium selection:bg-white selection:text-orange-400"> {schedule.operatorName}</p>
                         <br />
                         <p className="text-base select-none">Data</p>
                         <p className="text-m font-medium"> {departureDate}</p>
                     </div>
-                    <div className="bg-white px-4 py-2 rounded-2xl shadow-sm m-2 shadow-xl hover:bg-orange-400 hover:text-white">
+                    <div className="bg-white px-4 py-2 rounded-2xl shadow-sm m-2 shadow-xl hover:bg-orange-300 hover:text-white">
                         <p className="text-lg font-medium mb-5 selection:bg-white selection:text-orange-400"> Ndalesat:</p>
                         <p className="text-lg mb-3">
                             <span className="text-sm font-light selection:bg-white selection:text-orange-400">{departureTime}</span> -
@@ -74,7 +74,7 @@ const Line = ({ onClose, schedule, departureDate, departureTime, arrivalDate, ar
                         </p>
                     </div>
 
-                    <div className="bg-white px-4 py-2 rounded-2xl shadow-sm m-2 shadow-xl hover:bg-orange-400 hover:text-white">
+                    <div className="bg-white px-4 py-2 rounded-2xl shadow-sm m-2 shadow-xl hover:bg-orange-300 hover:text-white">
                         <p className="text-lg">
                             <span className="text-sm font-light selection:bg-white selection:text-orange-400">Cmimi:</span> -
                             <span className="font-normal selection:bg-white selection:text-orange-400"> {totalPrice} &#8364;</span>
@@ -82,8 +82,8 @@ const Line = ({ onClose, schedule, departureDate, departureTime, arrivalDate, ar
                     </div>
 
                     {/* Reserve and Close buttons */}
-                    <button className="font-medium uppercase  bg-white px-4 py-2 rounded-2xl m-2 shadow-xl text-center hover:bg-orange-400 hover:text-white " onClick={handleReservation}>Rezervo</button>
-                    <button className="font-medium uppercase bg-white px-4 py-2 rounded-2xl m-2 shadow-xl text-center hover:bg-orange-400 hover:text-white" onClick={onClose}>Close</button>
+                    <button className="font-medium uppercase  bg-white px-4 py-2 rounded-2xl m-2 shadow-xl text-center hover:bg-orange-300 hover:text-white " onClick={handleReservation}>Rezervo</button>
+                    <button className="font-medium uppercase bg-white px-4 py-2 rounded-2xl m-2 shadow-xl text-center hover:bg-orange-300 hover:text-white" onClick={onClose}>Close</button>
                 </div>
             </div>
         </div>

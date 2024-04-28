@@ -40,19 +40,22 @@ const TravelTo = () => {
     ];
 
     return (
-        <div className="flex justify-center items-center mt-10">
-            <ul className="flex justify-center items-center mt-10 logo-list">
-                {logos.map((logo) => (
-                    <li key={logo.text} className="mr-4 flex flex-col items-center">
-                        <img src={logo.image} alt={logo.text} className="w-[200px] h-[200px]  object-contain" />
-                        <p value={startCity}>{logo.text}</p>
-                        <button onClick={() => handleSubmit(logo.text)} className="text-sm focus:outline-none text-orange-400">
-                            Shiko linjen
-                        </button>
-                    </li>
-                ))}
-            </ul>
-        </div>
+        <>
+            <h2 className="text-3xl text-black font-extralight text-center mt-20">Destinacionet e preferuara</h2>
+            <div className="flex justify-center items-center">
+                <ul className="flex justify-center items-center mb-5 logo-list">
+                    {logos.map((logo) => (
+                        <li key={logo.text} className="mr-4 flex flex-col items-center">
+                            <img src={logo.image} alt={logo.text} className="w-[200px] h-[200px]  object-contain" />
+                            <p className="font-serif" value={startCity}>{logo.text}</p>
+                            <button onClick={() => handleSubmit(logo.text)} className="text-sm focus:outline-none text-orange-400">
+                                Shiko linjen
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        </>
     );
 };
 
