@@ -5,18 +5,18 @@ const Line = ({ onClose, schedule, departureDate, departureTime, arrivalDate, ar
     // Function to handle reservation
     const handleReservation = async () => {
         const token = localStorage.getItem('token'); // Retrieve the token from local storage
-        const userId = localStorage.getItem('userId'); // Retrieve the token from local storage
+        const userId = localStorage.getItem('userId'); // Retrieve the user ID from local storage
 
-        if (!token) {
-
-            // If token is not found, handle unauthorized access (e.g., redirect to login page)
-            console.error('User is not authenticated.');
-            // Handle unauthorized access here, such as showing a message to the user or redirecting to the login page
+        // Check if either token or userId is not found
+        if (!token || !userId) {
+            console.error('User is not authenticated or user ID is missing.');
+            // Redirect to login page if authentication fails or user ID is missing
+            window.location.href = '/authentication'; // Modify the path as per your route settings
             return;
         }
 
         try {
-            // Make a POST request to create a ticket, passing the token as a bearer token in the Authorization header
+            // Make a POST request to create a ticket
             const response = await axios.post(
                 'https://localhost:7264/Ticket',
                 {
@@ -34,14 +34,13 @@ const Line = ({ onClose, schedule, departureDate, departureTime, arrivalDate, ar
             onClose(); // Close the modal after successful reservation
         } catch (error) {
             console.error('Error creating ticket:', error.response.data);
-            // Handle errors, e.g., display error message to the user
         }
     };
 
     return (
         <div className="modal-overlay">
             <div className="modal">
-                <div className="fixed uppercase top-0 right-0 h-full bg-gray-400 bg-opacity-5 z-50 modal-content pt-6 px-6 rounded-2xl w-[400px] ">
+                <div className="fixed uppercase top-0 right-0 h-full bg-gray-400 bg-opacity-5 z-50 modal-content pt-6 px-6 rounded-2xl w-full sm:w-[400px] selection:bg-white selection:text-orange-400">
                     <h1 className="text-lg font-medium uppercase text-gray-900 bg-white px-4 py-2 rounded-lg shadow-sm m-2 shadow-xl text-center hover:bg-orange-300 hover:text-white">Detajet e linjes</h1>
 
                     <div className="bg-white px-4 py-2 rounded-2xl shadow-sm m-2 shadow-xl hover:bg-orange-300 hover:text-white">

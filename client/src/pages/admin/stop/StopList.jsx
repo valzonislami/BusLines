@@ -39,22 +39,22 @@ const StopList = () => {
     return (
         <>
             <NavBar />
-            <div className="container mx-auto w-3/5">
+            <div className="container mx-auto w-auto">
                 <div className="bg-white shadow-md rounded-xl my-6">
                     <div className="flex justify-between items-center border-b border-gray-200 p-6">
                         <h2 className="text-xl font-bold text-gray-700">Stop List</h2>
-                        <div>
-                        <Link to="/admin/stops/addStop">
-                            <button className="bg-orange-400 text-white font-medium py-2 px-4 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-orange-400 hover:bg-orange-500">
-                                Add new
-                            </button>
-                        </Link>
-                        <Link
-                            to="/admin"
-                            className="bg-gray-400 text-white font-medium py-2 px-4 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-gray-400 hover:bg-gray-500 ml-2"
-                        >
-                            Back
-                        </Link>
+                        <div className="flex space-x-2">
+                            <Link to="/admin/stops/addStop">
+                                <button className="bg-orange-400 text-white font-medium py-2 px-4 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-orange-400 hover:bg-orange-500">
+                                    Add new
+                                </button>
+                            </Link>
+                            <Link
+                                to="/admin"
+                                className="bg-gray-400 text-white font-medium py-2 px-4 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-gray-400 hover:bg-gray-500"
+                            >
+                                Back
+                            </Link>
                         </div>
                     </div>
                     <div className="w-full overflow-x-auto">
@@ -77,7 +77,7 @@ const StopList = () => {
                                             <button onClick={() => deleteStop(stop.id)} className="text-red-600 hover:text-red-900">
                                                 Delete
                                             </button>
-                                            <Link to={`/admin/stops/${stop.id}/edit`} className="text-blue-600 hover:text-blue-900 ml-10">
+                                            <Link to={`/admin/stops/${stop.id}/edit`} className="text-blue-600 hover:text-blue-900 ml-4 sm:ml-10">
                                                 Edit
                                             </Link>
                                         </td>
@@ -102,6 +102,7 @@ const StopList = () => {
             </div>
         </>
     );
+
 };
 
 export default StopList;

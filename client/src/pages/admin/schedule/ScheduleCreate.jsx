@@ -5,8 +5,7 @@ import NavBar from "../../../components/NavBar";
 
 const ScheduleCreate = () => {
     const [formData, setFormData] = useState({
-        startCityName: '',
-        destinationCityName: '',
+        busLineId: '', // Added for bus line ID
         operatorName: '',
         departure: '',
         arrival: '',
@@ -16,24 +15,23 @@ const ScheduleCreate = () => {
 
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-    const [cities, setCities] = useState([]);
+    const [busLines, setBusLines] = useState([]); // Holds the array of bus lines
     const [operators, setOperators] = useState([]);
     const [stops, setStops] = useState([]);
     const [selectedStop, setSelectedStop] = useState('');
 
     useEffect(() => {
-        fetchCities();
+        fetchBusLines();
         fetchOperators();
         fetchStops();
     }, []);
 
-    const fetchCities = async () => {
+    const fetchBusLines = async () => {
         try {
-            const response = await axios.get('https://localhost:7264/city');
-            const sortedCities = response.data.sort((a, b) => a.name.localeCompare(b.name));
-            setCities(sortedCities);
+            const response = await axios.get('https://localhost:7264/BusLine');
+            setBusLines(response.data);
         } catch (error) {
-            console.error('Error fetching cities:', error);
+            console.error('Error fetching bus lines:', error);
         }
     };
 
@@ -90,15 +88,17 @@ const ScheduleCreate = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        const { startCityName, destinationCityName, operatorName, departure, arrival, price, stationNames } = formData;
-        if (!startCityName || !destinationCityName || !operatorName || !departure || !arrival || !price || stationNames.some(station => !station.trim())) {
+        const { busLineId, operatorName, departure, arrival, price, stationNames } = formData;
+        // Find the selected bus line to get startCity and destinationCity
+        const busLine = busLines.find(line => line.id.toString() === busLineId);
+        if (!busLine || !operatorName || !departure || !arrival || !price || stationNames.some(station => !station.trim())) {
             setError('Please fill in all fields.');
             return;
         }
         try {
-            const response = await axios.post('https://localhost:7264/BusSchedule', {
-                startCityName,
-                destinationCityName,
+            await axios.post('https://localhost:7264/BusSchedule', {
+                startCityName: busLine.startCity.name,
+                destinationCityName: busLine.destinationCity.name,
                 operatorName,
                 departure,
                 arrival,
@@ -106,9 +106,9 @@ const ScheduleCreate = () => {
                 stationNames
             });
             setSuccess(`Bus schedule added successfully.`);
+            // Reset form
             setFormData({
-                startCityName: '',
-                destinationCityName: '',
+                busLineId: '',
                 operatorName: '',
                 departure: '',
                 arrival: '',
@@ -121,42 +121,30 @@ const ScheduleCreate = () => {
             console.error('Error adding bus schedule:', error);
         }
     };
+
     return (
         <>
             <NavBar />
-            <div className="container mx-auto w-3/5">
+            <div className="container mx-auto w-[400px] lg:w-[700px]">
                 <div className="bg-white shadow-md rounded-xl my-6">
                     <form onSubmit={handleSubmit} className="p-6">
                         <p className="block text-gray-700 text-xl font-medium mb-2">Add Bus Schedule</p>
                         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
                         {success && <p className="text-green-500 text-sm mb-4">{success}</p>}
                         <div className="mb-4">
-                            <label htmlFor="startCityName" className="block text-gray-700 text-sm font-bold mb-2">Start City:</label>
+                            <label htmlFor="busLineId" className="block text-gray-700 text-sm font-bold mb-2">Bus Line:</label>
                             <select
-                                id="startCityName"
-                                name="startCityName"
-                                value={formData.startCityName}
+                                id="busLineId"
+                                name="busLineId"
+                                value={formData.busLineId}
                                 onChange={handleChange}
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                             >
-                                <option value="">Select start city</option>
-                                {cities.map(city => (
-                                    <option key={city.id} value={city.name}>{city.name}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="mb-4">
-                            <label htmlFor="destinationCityName" className="block text-gray-700 text-sm font-bold mb-2">Destination City:</label>
-                            <select
-                                id="destinationCityName"
-                                name="destinationCityName"
-                                value={formData.destinationCityName}
-                                onChange={handleChange}
-                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            >
-                                <option value="">Select destination city</option>
-                                {cities.map(city => (
-                                    <option key={city.id} value={city.name}>{city.name}</option>
+                                <option value="">Select a bus line</option>
+                                {busLines.map(line => (
+                                    <option key={line.id} value={line.id}>
+                                        {line.startCity.name} - {line.destinationCity.name}
+                                    </option>
                                 ))}
                             </select>
                         </div>

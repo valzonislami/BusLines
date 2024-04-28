@@ -96,8 +96,8 @@ const LogIn = () => {
 
     return (
         <>
-            <div className="min-h-screen flex justify-center items-center bg-white">
-                <div className="max-w-md w-full">
+            <div className="min-h-screen flex justify-center items-center bg-white selection:bg-orange-400 selection:text-white">
+                <div className="max-w-md w-[380px] md:w-[600px] lg:w-[750px]">
                     <div className={`bg-white py-8 px-6 rounded-lg shadow-2xl ${mode === 'login' ? 'bg-opacity-90' : 'bg-opacity-80'}`}>
                         <Link to="../">
                             <div className="flex justify-center mb-8">
@@ -105,7 +105,7 @@ const LogIn = () => {
                             </div>
                         </Link>
                         <h1 className="text-3xl font-normal text-center text-black mb-8">{mode === 'login' ? 'Miresevini!' : 'Regjistrohu'}</h1>
-                        {error && <div className="mb-4 text-orange-400">{error}</div>} {/* Apply custom style to error message */}
+                        {error && <div className="mb-4 text-orange-400">{error}</div>}
                         <form onSubmit={handleSubmit}>
                             {mode !== 'signup' && (
                                 <>

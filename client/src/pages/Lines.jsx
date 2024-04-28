@@ -18,17 +18,6 @@ const Lines = () => {
     const [isLineOpen, setIsLineOpen] = useState(false);
 
     useEffect(() => {
-        // Fetch cities API
-        axios.get("https://localhost:7264/City")
-            .then(response => {
-                setCities(response.data);
-            })
-            .catch(error => {
-                console.error("Error fetching cities:", error);
-            });
-    }, []);
-
-    useEffect(() => {
         let apiUrl = `https://localhost:7264/BusSchedule?startCityName=${startCity}`;
 
         if (destinationCity) {
@@ -87,7 +76,6 @@ const Lines = () => {
 
     return (
         <>
-            <div>
                 <div className='absolute right-0'>
                     {selectedSchedule && isLineOpen && (
                         <Line onClose={closeLine} schedule={selectedSchedule} departureDate={selectedSchedule.departureDate} departureTime={selectedSchedule.departureTime} arrivalDate={selectedSchedule.arrivalDate} arrivalTime={selectedSchedule.arrivalTime} totalPrice={selectedSchedule.totalPrice}>
@@ -95,16 +83,16 @@ const Lines = () => {
                     )}
                 </div>
                 <NavBar />
-                <div className='flex flex-row-reverse justify-center'>
-                    <div className="flex justify-center items-center mt-10">
+                <div className='flex flex-col lg:flex-row justify-center selection:bg-orange-400 selection:text-white'>
+                    <div className="flex justify-center items-center mt-10 lg:mt-0 lg:mr-10">
                         <div>
                             <h3 className="text-2xl font-medium mb-10">Oraret e Autobusit</h3>
-                            <ul>
+                            <ul className="space-y-10">
                                 {busSchedules.filter((schedule) => {
                                     const departureDate = new Date(schedule.departure);
                                     const currentDate = new Date();
                                     return departureDate.getTime() > currentDate.getTime();
-                                }).map((schedule) => {
+                                }).map((schedule, index) => {
                                     const dateTimeString = schedule.departure;
                                     const arrivalDateTimeString = schedule.arrival;
                                     const dateTime = new Date(dateTimeString);
@@ -117,42 +105,39 @@ const Lines = () => {
                                     const totalPrice = schedule.price * passengerCount;
 
                                     return (
-                                        <>
-                                            <div className="bg-white rounded-lg shadow-xl overflow-hidden w-[750px] mb-10 hover:bg-orange-50">
-                                                <div className="flex items-center px-4 py-2 border-b border-gray-200 justify-between">
-                                                    <h3 className="text-lg font-normal text-gray-900 mr-2">
-                                                        <span className="text-orange-400">&#x21B3;</span>{schedule.startCityName}
-                                                    </h3>
-                                                    <div className='flex'>
-                                                        <h3>{departureDate} at  {departureTime}</h3>
-                                                    </div>
-                                                </div>
-                                                <div className="flex items-center px-4 py-2 border-b border-gray-200 justify-between">
-                                                    <h3 className="text-lg font-normal text-gray-900 mr-2">
-                                                        <span className="text-orange-400">&#x21B3;</span>{schedule.destinationCityName}
-                                                    </h3>
-                                                    <div className='flex'>
-                                                        <h3>{arrivalDate} at  {arrivalTime}</h3>
-                                                    </div>
-                                                </div>
-                                                <div className="flex items-center px-4 py-2">
-                                                    <div>
-                                                        <p className="ml-auto text-sm text-orange-400">{totalPrice}&#8364;</p>
-                                                        <p className="text-gray-500 text-sm">{schedule.operatorName}</p>
-                                                    </div>
-                                                    <button className="text-sm focus:outline-none ml-auto text-orange-400 hover:text-orange-700" onClick={() => handleDetailsClick(schedule)}>
-                                                        Shiko detajet
-                                                    </button>
+                                        <li key={index} className="bg-white rounded-lg shadow-xl overflow-hidden w-[380px] md:w-[600px] lg:w-[750px] mb-10 hover:bg-orange-50">
+                                            <div className="flex flex-row items-center px-4 py-2 border-b border-gray-200 justify-between">
+                                                <h3 className="text-lg font-normal text-gray-900 lg:mr-2">
+                                                    <span className="text-orange-400">&#x21B3;</span>{schedule.startCityName}
+                                                </h3>
+                                                <div className='flex'>
+                                                    <h3 className="lg:ml-4">{departureDate} at {departureTime}</h3>
                                                 </div>
                                             </div>
-                                        </>
+                                            <div className="flex flex-row items-center px-4 py-2 border-b border-gray-200 justify-between">
+                                                <h3 className="text-lg font-normal text-gray-900 lg:mr-2">
+                                                    <span className="text-orange-400">&#x21B3;</span>{schedule.destinationCityName}
+                                                </h3>
+                                                <div className='flex'>
+                                                    <h3 className="lg:ml-4">{arrivalDate} at {arrivalTime}</h3>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center px-4 py-2">
+                                                <div>
+                                                    <p className="ml-auto text-sm text-orange-400">{totalPrice}&#8364;</p>
+                                                    <p className="text-gray-500 text-sm">{schedule.operatorName}</p>
+                                                </div>
+                                                <button className="text-sm focus:outline-none ml-auto text-orange-400 hover:text-orange-700" onClick={() => handleDetailsClick(schedule)}>
+                                                    Shiko detajet
+                                                </button>
+                                            </div>
+                                        </li>
                                     );
                                 })}
                             </ul>
                         </div>
                     </div>
                 </div>
-            </div>
             <Footer />
         </>
     );

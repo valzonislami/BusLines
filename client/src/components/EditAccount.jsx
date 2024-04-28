@@ -56,8 +56,8 @@ const EditAccount = ({ setOpenEditProfile }) => {
 
     return (
         <div>
-            <form onSubmit={handleSubmit} className="p-16 pb-6 bg-white border-2 border-gray-300 rounded-lg">
-                <div className="mb-6">
+            <form onSubmit={handleSubmit} className="p-16 pb-6 bg-white shadow-xl rounded-lg">
+                <div className="mb-6 w-[280px] md:w-[400px] lg:w-[550px]">
                     <input
                         className="w-full px-4 py-3 rounded-md bg-gray-200 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:bg-white transition duration-300 ease-in-out"
                         type="text"

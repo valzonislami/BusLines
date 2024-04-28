@@ -45,7 +45,7 @@ const TicketList = () => {
     return (
         <>
             <NavBar />
-            <div className="container mx-auto w-11/12">
+            <div className="container mx-auto w-auto">
                 <div className="bg-white shadow-md rounded-xl my-6">
                     <div className="flex justify-between items-center border-b border-gray-200 p-6">
                         <h2 className="text-xl font-bold text-gray-700">Ticket List</h2>
@@ -75,7 +75,7 @@ const TicketList = () => {
                                 {currentItems.map((ticket, index) => (
                                     <tr key={ticket.id}>
                                         <td className="px-6 py-4">{ticket.id}</td>
-                                        <td className="px-6 py-4">{ticket.firstName} {ticket.lastName}</td>
+                                        <td className="px-6 py-4">{ticket.userName}</td>
                                         <td className="px-6 py-4">{ticket.startCityName} to {ticket.destinationCityName}</td>
                                         <td className="px-6 py-4">{ticket.departure}</td>
                                         <td className="px-6 py-4">{ticket.seat}</td>

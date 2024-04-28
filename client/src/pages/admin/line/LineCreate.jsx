@@ -36,31 +36,43 @@ const LineCreate = () => {
         setSuccess('');
     };
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        if (!startCityName.trim() || !destinationCityName.trim()) {
-            setError('Please enter both start and destination city names.');
+const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (!startCityName.trim() || !destinationCityName.trim()) {
+        setError('Please enter both start and destination city names.');
+        return;
+    }
+    
+    try {
+        // Check if the bus line already exists in the database
+        const response = await axios.get(`https://localhost:7264/BusLine?startCityName=${startCityName}&destinationCityName=${destinationCityName}`);
+        
+        // If the response has data, it means the bus line already exists
+        if (response.data.length > 0) {
+            setError('Bus Line with the same start and destination city already exists.');
             return;
         }
-        try {
-            const response = await axios.post('https://localhost:7264/BusLine', {
-                startCityName: startCityName,
-                destinationCityName: destinationCityName
-            });
-            setSuccess(`Bus line from "${response.data.startCity.name}" to "${response.data.destinationCity.name}" added successfully.`);
-            setStartCityName('');
-            setDestinationCityName('');
-            setError('');
-        } catch (error) {
-            setError('Error adding bus line. Please try again.');
-            console.error('Error adding bus line:', error);
-        }
-    };
+
+        // If the response is empty, it means the bus line doesn't exist, so we can proceed to add it
+        const addResponse = await axios.post('https://localhost:7264/BusLine', {
+            startCityName: startCityName,
+            destinationCityName: destinationCityName
+        });
+
+        setSuccess(`Bus line from "${addResponse.data.startCity.name}" to "${addResponse.data.destinationCity.name}" added successfully.`);
+        setStartCityName('');
+        setDestinationCityName('');
+        setError('');
+    } catch (error) {
+        setError('Error adding bus line. Please try again.');
+        console.error('Error adding bus line:', error);
+    }
+};
 
     return (
         <>
             <NavBar />
-            <div className="container mx-auto w-3/5">
+            <div className="container mx-auto w-[400px] lg:w-[700px]">
                 <div className="bg-white shadow-md rounded-xl my-6">
                     <form onSubmit={handleSubmit} className="p-6">
                         <p className="block text-gray-700 text-xl font-medium mb-2">Add Bus Line</p>

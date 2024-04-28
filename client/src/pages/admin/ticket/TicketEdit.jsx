@@ -7,8 +7,7 @@ const EditTicket = () => {
     const { id } = useParams();
     const [ticket, setTicket] = useState({
         userId: '',
-        firstName: '',
-        lastName: '',
+        userName: '',
         busScheduleId: '',
         seat: '',
         dateOfBooking: ''
@@ -60,7 +59,7 @@ const EditTicket = () => {
     return (
         <>
             <NavBar />
-            <div className="container mx-auto w-3/5">
+            <div className="container mx-auto w-[400px] lg:w-[700px]">
                 <div className="bg-white shadow-md rounded-xl my-6">
                     <form onSubmit={updateTicket} className="p-6">
                         <p className="block text-gray-700 text-xl font-medium mb-2">Edit Ticket</p>
@@ -70,7 +69,7 @@ const EditTicket = () => {
                                 type="text"
                                 id="userName"
                                 name="userName"
-                                value={`${ticket.firstName} ${ticket.lastName}`}
+                                value={`${ticket.userName}`}
                                 readOnly
                                 className="bg-gray-100 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                             />

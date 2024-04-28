@@ -51,7 +51,7 @@ const EditOperator = () => {
     return (
         <>
             <NavBar />
-            <div className="container mx-auto w-3/5">
+            <div className="container mx-auto w-[400px] lg:w-[700px]">
                 <div className="bg-white shadow-md rounded-xl my-6">
                     <form onSubmit={updateOperator} className="p-6">
                         <p className="block text-gray-700 text-xl font-medium mb-2">Edit Operator</p>

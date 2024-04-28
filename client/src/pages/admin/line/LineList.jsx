@@ -39,23 +39,23 @@ const LineList = () => {
     return (
         <>
             <NavBar />
-            <div className="container mx-auto w-3/5">
+            <div className="container mx-auto w-auto">
                 <div className="bg-white shadow-md rounded-xl my-6">
                     <div className="flex justify-between items-center border-b border-gray-200 p-6">
                         <h2 className="text-xl font-bold text-gray-700">Bus Line List</h2>
                         <div>
-                        <Link to="/admin/lines/addLine">
-                            <button className="bg-orange-400 text-white font-medium py-2 px-4 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-orange-400 hover:bg-orange-500">
-                                Add new
-                            </button>
-                        </Link>
-                        <Link
-                            to="/admin"
-                            className="bg-gray-400 text-white font-medium py-2 px-4 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-gray-400 hover:bg-gray-500 ml-2"
-                        >
-                            Back
-                        </Link>
-                    </div>
+                            <Link to="/admin/lines/addLine">
+                                <button className="bg-orange-400 text-white font-medium py-2 px-4 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-orange-400 hover:bg-orange-500">
+                                    Add new
+                                </button>
+                            </Link>
+                            <Link
+                                to="/admin"
+                                className="bg-gray-400 text-white font-medium py-2 px-4 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-gray-400 hover:bg-gray-500 ml-2"
+                            >
+                                Back
+                            </Link>
+                        </div>
                     </div>
                     <div className="w-full overflow-x-auto">
                         <table className="w-full whitespace-no-wrap">

@@ -39,7 +39,7 @@ const UserList = () => {
     return (
         <>
             <NavBar />
-            <div className="container mx-auto w-3/5">
+            <div className="container mx-auto w-auto">
                 <div className="bg-white shadow-md rounded-xl my-6">
                     <div className="flex justify-between items-center border-b border-gray-200 p-6">
                         <h2 className="text-xl font-bold text-gray-700">User List</h2>

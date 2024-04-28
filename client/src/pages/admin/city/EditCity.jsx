@@ -14,7 +14,7 @@ const EditCity = () => {
 
     const fetchCity = async () => {
         try {
-            const response = await axios.get(`https://localhost:7264/City/${id}`); 
+            const response = await axios.get(`https://localhost:7264/City/${id}`);
             setCity(response.data);
         } catch (error) {
             console.error('Error fetching city:', error);
@@ -39,8 +39,8 @@ const EditCity = () => {
 
     return (
         <>
-        <NavBar />
-            <div className="container mx-auto w-3/5">
+            <NavBar />
+            <div className="container mx-auto w-[400px] lg:w-[700px]">
                 <div className="bg-white shadow-md rounded-xl my-6">
                     <form onSubmit={updateCity} className="p-6">
                         <p className="block text-gray-700 text-xl font-medium mb-2">Edit City</p>
