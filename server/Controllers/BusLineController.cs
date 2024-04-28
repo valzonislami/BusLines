@@ -17,16 +17,16 @@ namespace server.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetBusLines()
+        public async Task<IActionResult> GetBusLines(string startCityName = null, string destinationCityName = null)
         {
             try
             {
-                var busLines = await _busLineService.GetBusLinesAsync();
+                var busLines = await _busLineService.GetBusLinesAsync(startCityName, destinationCityName);
                 return Ok(busLines);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message); // Handle exceptions more gracefully in a real application
+                return BadRequest(ex.Message);
             }
         }
 

@@ -17,13 +17,24 @@ namespace server.Services
             _context = context;
         }
 
-        public async Task<List<BusLine>> GetBusLinesAsync()
+        public async Task<List<BusLine>> GetBusLinesAsync(string startCityName = null, string destinationCityName = null)
         {
-            return await _context.BusLines
-                // Include the start city and destination city for each bus line
+            var query = _context.BusLines
                 .Include(bl => bl.StartCity)
                 .Include(bl => bl.DestinationCity)
-                .ToListAsync();
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(startCityName))
+            {
+                query = query.Where(bl => bl.StartCity.Name == startCityName);
+            }
+
+            if (!string.IsNullOrEmpty(destinationCityName))
+            {
+                query = query.Where(bl => bl.DestinationCity.Name == destinationCityName);
+            }
+
+            return await query.ToListAsync();
         }
 
         public async Task<BusLine> GetBusLineAsync(int id)
@@ -38,30 +49,42 @@ namespace server.Services
 
         public async Task<BusLine> AddBusLineAsync(BusLineDTO busLineDTO)
         {
-            // Find the start and destination cities by their names
+            // Check if a bus line with the same start and destination city already exists
+            var existingBusLine = await _context.BusLines
+                .Include(bl => bl.StartCity)
+                .Include(bl => bl.DestinationCity)
+                .FirstOrDefaultAsync(bl => bl.StartCity.Name == busLineDTO.StartCityName && bl.DestinationCity.Name == busLineDTO.DestinationCityName);
+
+            if (existingBusLine != null)
+            {
+                throw new ArgumentException("Bus line with the same start and destination city already exists.");
+            }
+
+            // Find the start and destination cities by their names (same logic as before)
             var startCity = await _context.Cities.FirstOrDefaultAsync(c => c.Name == busLineDTO.StartCityName);
             var destinationCity = await _context.Cities.FirstOrDefaultAsync(c => c.Name == busLineDTO.DestinationCityName);
 
-            // Check if the start and destination cities are found
+            // Check if the start and destination cities are found (same logic as before)
             if (startCity == null || destinationCity == null)
             {
                 throw new ArgumentException("Invalid start city or destination city name.");
             }
 
-            // Create a new bus line
+            // Create a new bus line (same logic as before)
             var busLine = new BusLine
             {
                 StartCityId = startCity.Id,
                 DestinationCityId = destinationCity.Id
             };
 
-            // Add the bus line to the database
+            // Add the bus line to the database (same logic as before)
             _context.BusLines.Add(busLine);
             await _context.SaveChangesAsync();
 
-            // Return the added bus line
+            // Return the added bus line (same logic as before)
             return busLine;
         }
+
 
         public async Task UpdateBusLineAsync(int id, BusLineDTO busLineDTO)
         {
