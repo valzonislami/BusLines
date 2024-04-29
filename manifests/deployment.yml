@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
         - name: valzonislamibuslines 
-          image: buslines.azurecr.io/valzonislamibuslines
+          image: buslines.azurecr.io/valzonislamibuslines:latest
           ports:
-          - containerPort: 80
+          - containerPort: 8080
